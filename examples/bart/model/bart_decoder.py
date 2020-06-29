@@ -42,7 +42,6 @@ class BARTDecoder(ModuleBase):
                 "dim": 1024,
                 "embedding_dropout": 0.1,
                 "eps": 1e-5,
-                'use_bert_config': True,
                 "multihead_attention": {
                     "dropout_rate": 0.1,
                     "name": "multihead_attention",
