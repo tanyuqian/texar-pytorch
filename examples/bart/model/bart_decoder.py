@@ -1,5 +1,8 @@
 import math
 
+import torch
+from torch import nn
+
 from texar.torch import ModuleBase
 from texar.torch.modules import TransformerDecoder
 
@@ -21,6 +24,12 @@ class BARTDecoder(ModuleBase):
 
         assert token_embedder.dim == self._hparams.embedding_dim
 
+        if self._hparams.layernorm_embedding:
+            self._layernorm_embedding = nn.LayerNorm(
+                normalized_shape=token_embedder.dim,
+                eps=self._hparams.transformer.eps,
+                elementwise_affine=True)
+
         self._transformer_decoder = TransformerDecoder(
             token_pos_embedder=self._embedding_fn,
             vocab_size=token_embedder.vocab_size,
@@ -31,7 +40,12 @@ class BARTDecoder(ModuleBase):
         word_embed = self._token_embedder(tokens)
         scale = self._hparams.transformer.dim ** 0.5
         pos_embed = self._pos_embedder(positions)
-        return word_embed * scale + pos_embed
+
+        x = word_embed * scale + pos_embed
+        if self._hparams.layernorm_embedding:
+            x = self._layernorm_embedding(x)
+
+        return x
 
     @property
     def forward(self):
@@ -43,6 +57,7 @@ class BARTDecoder(ModuleBase):
             'max_positions': 1024,
             'embedding_dim': 1024,
             'no_scale_embedding': True,
+            'layernorm_embedding': True,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
