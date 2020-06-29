@@ -28,7 +28,7 @@ class BART(EncoderDecoderBase):
             hparams=self._hparams.decoder)
 
         self.smoothed_loss_func = LabelSmoothingLoss(
-            label_confidence=self.config_model.loss_label_confidence,
+            label_confidence=self._hparams.loss_label_confidence,
             tgt_vocab_size=self.vocab_size,
             ignore_index=0)
 
@@ -72,6 +72,7 @@ class BART(EncoderDecoderBase):
     def default_hparams():
         return {
             'token_embedder': {'dim': 1024},
+            'loss_label_confidence': 0.9,
             'encoder': None,
             'decoder': None
         }
