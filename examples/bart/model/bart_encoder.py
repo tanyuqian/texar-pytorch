@@ -24,13 +24,6 @@ class BARTEncoder(EncoderBase):
         self.embed_scale = 1.0 if self._hparams.no_scale_embedding else \
             math.sqrt(self._hparams.embedding_dim)
 
-        if self._hparams.layernorm_embedding:
-            self.layernorm_embedding = nn.LayerNorm(
-                normalized_shape=self._hparams.embedding_dim,
-                eps=1e-5, elementwise_affine=True)
-        else:
-            self.layernorm_embedding = None
-
         self._transformer_encoder = TransformerEncoder(
             hparams=self._hparams.transformer)
 
