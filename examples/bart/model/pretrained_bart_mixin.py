@@ -29,7 +29,7 @@ class PretrainedBARTMixin(PretrainedMixin):
             cache_dir, self._MODEL2CKPT[pretrained_model_name])
         ckpt_state_dict = torch.load(checkpoint_path)
 
-        for key, value in ckpt_state_dict:
+        for key, value in ckpt_state_dict.items():
             print(key, value.shape)
 
     def _transform_config(cls, pretrained_model_name: str,
