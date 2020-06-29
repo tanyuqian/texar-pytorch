@@ -52,12 +52,11 @@ class BARTEncoder(EncoderBase):
             'max_positions': 1024,
             'embedding_dim': 1024,
             'no_scale_embedding': True,
-            'layernorm_embedding': True,
-            'use_bert_config': True,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
                 "eps": 1e-5,
+                'use_bert_config': True,
                 "multihead_attention": {
                     "dropout_rate": 0.1,
                     "name": "multihead_attention",
