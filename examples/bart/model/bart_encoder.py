@@ -22,9 +22,6 @@ class BARTEncoder(EncoderBase):
         self.embed_scale = 1.0 if self._hparams.no_scale_embedding else \
             math.sqrt(self._hparams.embedding_dim)
 
-        # print(self._hparams.transformer)
-        # exit()
-
         self._transformer_encoder = TransformerEncoder(
             hparams=self._hparams.transformer.todict())
 
@@ -94,7 +91,7 @@ class BARTEncoder(EncoderBase):
                     ],
                     "name": "ffn"
                 },
-                "residual_dropout": 0.1
+                "residual_dropout": 0.1,
             }
         }
 
