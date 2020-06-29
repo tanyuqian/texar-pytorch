@@ -22,11 +22,16 @@ class BARTDecoder(ModuleBase):
         assert token_embedder.dim == self._hparams.embedding_dim
 
         self._transformer_decoder = TransformerDecoder(
-            token_embedder=self._token_embedder,
-            token_pos_embedder=self._pos_embedder,
+            token_pos_embedder=self._embedding_fn,
             vocab_size=token_embedder.vocab_size,
             output_layer=self._token_embedder.embedding,
             hparams=self._hparams.transformer)
+
+    def _embedding_fn(self, tokens, positions):
+        word_embed = self._token_embedder(tokens)
+        scale = self._hparams.transformer.dim ** 0.5
+        pos_embed = self._pos_embedder(positions)
+        return word_embed * scale + pos_embed
 
     @property
     def forward(self):
