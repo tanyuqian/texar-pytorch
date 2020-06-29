@@ -2,7 +2,7 @@ from texar.torch.modules.pretrained.pretrained_base import PretrainedMixin
 
 
 class PretrainedBARTMixin(PretrainedMixin):
-    _MODEL_NAME = "BERT"
+    _MODEL_NAME = "BART"
     _MODEL2URL = {
         'bart.large': 'https://dl.fbaipublicfiles.com/fairseq/models/bart.large.tar.gz'
     }
