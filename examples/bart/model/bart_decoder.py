@@ -106,5 +106,6 @@ class BARTDecoder(ModuleBase):
                     "name": "ffn"
                 },
                 "residual_dropout": 0.1,
+                'final_layer_norm': False
             }
         }

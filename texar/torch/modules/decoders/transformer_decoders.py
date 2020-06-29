@@ -139,8 +139,9 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
 
         self.initialize_blocks()
 
-        self.final_layer_norm = nn.LayerNorm(self._input_size,
-                                             eps=self._hparams.eps)
+        if self._hparams.final_layer_norm:
+            self.final_layer_norm = nn.LayerNorm(
+                self._input_size, eps=self._hparams.eps)
 
         self.embed_dropout = nn.Dropout(self._hparams.embedding_dropout)
         self.residual_dropout = nn.Dropout(self._hparams.residual_dropout)
@@ -286,6 +287,7 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             'max_decoding_length': int(1e10),
             'embedding_dropout': 0.1,
             'residual_dropout': 0.1,
+            'final_layer_norm': True,
             'poswise_feedforward': default_transformer_poswise_net_hparams(dim),
             'multihead_attention': {
                 'name': 'multihead_attention',
@@ -667,7 +669,9 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             sub_output = self.poswise_networks[i](self.poswise_layer_norm[i](x))
             x = x + self.residual_dropout(sub_output)
 
-        return self.final_layer_norm(x)
+        if self._params.final_layer_norm:
+            x = self.final_layer_norm(x)
+        return x
 
     def _init_cache(self, memory: Optional[torch.Tensor],
                     memory_attention_bias: Optional[torch.Tensor],
