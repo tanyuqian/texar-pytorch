@@ -8,6 +8,8 @@ from .learned_positional_embedding import LearnedPositionalEmbedding
 
 from texar.torch.modules import TransformerEncoder, EncoderBase
 
+from fairseq.models.transformer import TransformerEncoder
+
 
 class BARTEncoder(EncoderBase):
     def __init__(self, pad_id, token_embedder, hparams=None):
@@ -37,8 +39,6 @@ class BARTEncoder(EncoderBase):
         x = embed = self.embed_scale * self._token_embedder(src_tokens)
         if self.embed_positions is not None:
             x = embed + self._pos_embedder(src_tokens)
-        if self.layernorm_embedding:
-            x = self.layernorm_embedding(x)
         return x, embed
 
     def forward(self, src_tokens, src_lengths):
@@ -53,6 +53,7 @@ class BARTEncoder(EncoderBase):
             'embedding_dim': 1024,
             'no_scale_embedding': True,
             'layernorm_embedding': True,
+            'use_bert_config': True,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
