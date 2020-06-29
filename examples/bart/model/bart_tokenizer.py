@@ -15,6 +15,7 @@ class BARTTokenizer:
 
         self._bos_id = 0
         self._eos_id = 2
+        self._pad_id = 1
 
         self._gpt2_to_bart = pickle.load(open(mapping_path, 'rb'))
         self._bart_to_gpt2 = {
@@ -38,3 +39,7 @@ class BARTTokenizer:
                 break
 
         return self._gpt2_tokenizer.map_id_to_text(token_ids=gpt2_ids)
+
+    @property
+    def pad_id(self):
+        return self._pad_id
