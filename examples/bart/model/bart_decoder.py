@@ -1,12 +1,12 @@
 import math
 
+from texar.torch import ModuleBase
+from texar.torch.modules import TransformerDecoder
+
 from .learned_positional_embedding import LearnedPositionalEmbedding
 
-from texar.torch.modules import TransformerEncoder
-from texar.torch import ModuleBase
 
-
-class BARTEncoder(ModuleBase):
+class BARTDecoder(ModuleBase):
     def __init__(self, pad_id, token_embedder, hparams=None):
         ModuleBase.__init__(self=self, hparams=hparams)
 
@@ -19,20 +19,18 @@ class BARTEncoder(ModuleBase):
         self.embed_scale = 1.0 if self._hparams.no_scale_embedding else \
             math.sqrt(self._hparams.embedding_dim)
 
-        self._transformer_encoder = TransformerEncoder(
-            hparams=self._hparams.transformer.todict())
+        assert token_embedder.dim == self._hparams.embedding_dim
 
-    def forward_embedding(self, src_tokens):
-        # embed tokens and positions
-        x = embed = self.embed_scale * self._token_embedder(src_tokens)
-        if self.embed_positions is not None:
-            x = embed + self._pos_embedder(src_tokens)
-        return x, embed
+        self._transformer_decoder = TransformerDecoder(
+            token_embedder=self._token_embedder,
+            token_pos_embedder=self._pos_embedder,
+            vocab_size=token_embedder.vocab_size,
+            output_layer=self._token_embedder.embedding,
+            hparams=self._hparams.transformer)
 
-    def forward(self, src_tokens, src_lengths):
-        x, encoder_embedding = self.forward_embedding(src_tokens)
-
-        return self._transformer_encoder(inputs=x, sequence_length=src_lengths)
+    @property
+    def forward(self):
+        return self._transformer_decoder.forward
 
     @staticmethod
     def default_hparams():
@@ -91,4 +89,3 @@ class BARTEncoder(ModuleBase):
                 "residual_dropout": 0.1,
             }
         }
-
