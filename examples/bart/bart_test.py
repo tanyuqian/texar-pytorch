@@ -21,10 +21,12 @@ from model.bart_encoder_decoder import BART
 
 bart = BART()
 
-print(len(list(bart.named_parameters())))
+print(bart._encoder.hparams)
 
-total_numel = 0
-for name, param in bart.named_parameters():
-    print(name, param.shape)
-    total_numel += param.numel()
-print(total_numel)
+# print(len(list(bart.named_parameters())))
+#
+# total_numel = 0
+# for name, param in bart.named_parameters():
+#     print(name, param.shape)
+#     total_numel += param.numel()
+# print(total_numel)
