@@ -46,4 +46,4 @@ class BARTTokenizer:
 
     @property
     def vocab_size(self):
-        return self._gpt2_tokenizer.vocab_size
+        return max(self._gpt2_to_bart.values()) + 1
