@@ -29,7 +29,7 @@ class BART(EncoderDecoderBase):
 
         self.smoothed_loss_func = LabelSmoothingLoss(
             label_confidence=self._hparams.loss_label_confidence,
-            tgt_vocab_size=self.vocab_size,
+            tgt_vocab_size=self._token_embedder.vocab_size,
             ignore_index=0)
 
     def forward(self, src_tokens, src_lengths, decoder_input=None, labels=None,
