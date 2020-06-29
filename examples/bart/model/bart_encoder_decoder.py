@@ -11,7 +11,9 @@ class BART(EncoderDecoderBase):
 
         self._tokenizer = BARTTokenizer()
 
-        self._token_embedder = WordEmbedder(vocab_size=self._hparams.vocab_size)
+        self._token_embedder = WordEmbedder(
+            vocab_size=self._tokenizer.vocab_size,
+            hparams=self._hparams.token_embedder)
 
         self._encoder = BARTEncoder(
             pad_id=self._tokenizer.pad_id,
@@ -21,7 +23,7 @@ class BART(EncoderDecoderBase):
     @staticmethod
     def default_hparams():
         return {
-            'vocab_size': 50265,
+            'token_embedder': {'dim': 1024},
             'encoder': None,
             'decoder': None
         }

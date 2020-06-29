@@ -43,3 +43,7 @@ class BARTTokenizer:
     @property
     def pad_id(self):
         return self._pad_id
+
+    @property
+    def vocab_size(self):
+        return self._gpt2_tokenizer.vocab_size
