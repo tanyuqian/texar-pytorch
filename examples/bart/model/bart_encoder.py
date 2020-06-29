@@ -8,8 +8,6 @@ from .learned_positional_embedding import LearnedPositionalEmbedding
 
 from texar.torch.modules import TransformerEncoder, EncoderBase
 
-from fairseq.models.transformer import TransformerEncoder
-
 
 class BARTEncoder(EncoderBase):
     def __init__(self, pad_id, token_embedder, hparams=None):
@@ -28,7 +26,7 @@ class BARTEncoder(EncoderBase):
         # exit()
 
         self._transformer_encoder = TransformerEncoder(
-            hparams=self._hparams.transformer)
+            hparams=self._hparams.transformer.todict())
 
     def forward_embedding(self, src_tokens):
         # embed tokens and positions
