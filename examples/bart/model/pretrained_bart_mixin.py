@@ -65,18 +65,22 @@ class PretrainedBARTMixin(PretrainedMixin):
         }
 
         for temp_ours, temp_ckpt in no_cond_map.items():
-            self.state_dict()[temp_ours].copy_(ckpt_state_dict[temp_ckpt])
+            ours_name = temp_ours
+            ckpt_name = temp_ckpt
+            self.state_dict()[ours_name].copy_(ckpt_state_dict[ckpt_name])
 
         for layer in range(12):
             for temp_ours, temp_ckpt in layer_map.items():
-                self.state_dict()[temp_ours.format(layer=layer)].copy_(
-                    ckpt_state_dict[temp_ckpt.format(layer=layer)])
+                ours_name = temp_ours.format(layer=layer)
+                ckpt_name = temp_ckpt.format(layer=layer)
+                self.state_dict()[ours_name].copy_(ckpt_state_dict[ckpt_name])
 
             for c in ['Q', 'K', 'V', 'O']:
                 for temp_ours, temp_ckpt in layer_c_map.items():
-                    self.state_dict()[temp_ours.format(layer=layer, c=c)].copy_(
-                        ckpt_state_dict[temp_ckpt.format(layer=layer, c=c)])
-
+                    ours_name = temp_ours.format(layer=layer, c=c)
+                    ckpt_name = temp_ckpt.format(layer=layer, c=c.lower())
+                    self.state_dict()[ours_name].copy_(
+                        ckpt_state_dict[ckpt_name])
 
     def _transform_config(cls, pretrained_model_name: str,
                           cache_dir: str):
