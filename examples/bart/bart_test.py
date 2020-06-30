@@ -30,7 +30,7 @@ assert input_ids == fs_input_ids
 src_tokens = torch.tensor(input_ids)
 src_lengths = torch.tensor([len(input_ids)])
 
-
+bart(src_tokens=src_tokens, src_lengths=src_lengths)
 
 # print(bart)
 
