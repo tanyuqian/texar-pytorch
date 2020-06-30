@@ -78,7 +78,7 @@ class PretrainedBARTMixin(PretrainedMixin):
                         temp_ckpt.format(layer=layer, c=c))
 
 
-def _transform_config(cls, pretrained_model_name: str,
+    def _transform_config(cls, pretrained_model_name: str,
                           cache_dir: str):
         pass
 
