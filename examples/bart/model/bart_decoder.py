@@ -83,9 +83,7 @@ class BARTDecoder(ModuleBase):
                             "type": "Linear"
                         },
                         {
-                            "kwargs": {
-                                "inplace": True
-                            },
+                            "kwargs": {},
                             "type": "GELU"
                         },
                         {

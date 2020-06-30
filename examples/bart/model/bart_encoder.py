@@ -68,9 +68,7 @@ class BARTEncoder(ModuleBase):
                             "type": "Linear"
                         },
                         {
-                            "kwargs": {
-                                "inplace": True
-                            },
+                            "kwargs": {},
                             "type": "GELU"
                         },
                         {
