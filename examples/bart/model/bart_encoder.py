@@ -32,6 +32,9 @@ class BARTEncoder(ModuleBase):
     def forward(self, src_tokens, src_lengths):
         x, encoder_embedding = self.forward_embedding(src_tokens)
 
+        print(x)
+        exit()
+
         return self._transformer_encoder(inputs=x, sequence_length=src_lengths)
 
     @staticmethod
