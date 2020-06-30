@@ -83,8 +83,8 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
     @property
     def encode(self):
-        return self._tokenizer.encode
+        return self.tokenizer.encode
 
     @property
     def decode(self):
-        return self._tokenizer.decode
+        return self.tokenizer.decode
