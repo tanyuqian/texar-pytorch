@@ -86,7 +86,7 @@ class BARTDecoder(ModuleBase):
                             "kwargs": {
                                 "inplace": True
                             },
-                            "type": "ReLU"
+                            "type": "GELU"
                         },
                         {
                             "kwargs": {
