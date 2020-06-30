@@ -3,6 +3,8 @@ from torch import nn
 
 from model.bart_encoder_decoder import BART
 
+from fairseq.models.bart.model import BARTModel
+
 
 example = '''Texar-PyTorch is a toolkit aiming to support a broad set of machine
 learning, especially natural language processing and text generation tasks.
@@ -33,7 +35,7 @@ src_lengths = torch.tensor([len(input_ids)])
 try:
     bart(src_tokens=src_tokens, src_lengths=src_lengths)
 except:
-    fs_bart(src_tokens=src_tokens, src_lengths=src_lengths)
+    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=None)
 
 # print(bart)
 
