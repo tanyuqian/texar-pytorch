@@ -25,8 +25,7 @@ class BARTEncoder(ModuleBase):
     def forward_embedding(self, src_tokens):
         # embed tokens and positions
         x = embed = self.embed_scale * self._token_embedder(src_tokens)
-        if self.embed_positions is not None:
-            x = embed + self._pos_embedder(src_tokens)
+        x = embed + self._pos_embedder(src_tokens)
         return x, embed
 
     def forward(self, src_tokens, src_lengths):
