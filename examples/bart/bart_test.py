@@ -4,6 +4,7 @@ from torch import nn
 from model.bart_encoder_decoder import BART
 
 from fairseq.models.bart.model import BARTModel
+from fairseq.models.transformer import TransformerEncoder
 
 
 example = '''Texar-PyTorch is a toolkit aiming to support a broad set of machine
@@ -22,9 +23,11 @@ researchers and practitioners for fast prototyping and experimentation.'''
 #     raise ValueError('Tokenizer Check Failed!!!')
 
 bart = BART()
+bart.eval()
 input_ids = bart.encode(example)
 
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large')
+fs_bart.eval()
 fs_input_ids = fs_bart.encode(example).tolist()
 
 assert input_ids == fs_input_ids
