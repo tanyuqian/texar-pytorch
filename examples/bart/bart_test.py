@@ -32,17 +32,17 @@ assert input_ids == fs_input_ids
 src_tokens = torch.tensor([input_ids])
 src_lengths = torch.tensor([len(input_ids)])
 
-try:
-    bart(src_tokens=src_tokens, src_lengths=src_lengths)
-except:
-    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=None)
-
 # print(bart)
 
 # print(len(list(bart.named_parameters())))
 #
 # total_numel = 0
-# for name, param in bart.named_parameters():
-#     print(name, param.shape)
+for name, param in bart.named_parameters():
+    print(name, param.shape)
 #     total_numel += param.numel()
 # print(total_numel)
+
+try:
+    bart(src_tokens=src_tokens, src_lengths=src_lengths)
+except:
+    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=None)
