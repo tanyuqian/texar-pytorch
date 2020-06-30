@@ -10,8 +10,8 @@ class BARTEncoder(ModuleBase):
     def __init__(self, pad_id, token_embedder, hparams=None):
         ModuleBase.__init__(self=self, hparams=hparams)
 
-        self._token_embedder = token_embedder
-        self._pos_embedder = LearnedPositionalEmbedding(
+        self.token_embedder = token_embedder
+        self.pos_embedder = LearnedPositionalEmbedding(
             num_embeddings=self._hparams.max_positions + pad_id + 1,
             embedding_dim=self._hparams.embedding_dim,
             padding_idx=pad_id)
@@ -24,7 +24,7 @@ class BARTEncoder(ModuleBase):
 
     def forward_embedding(self, src_tokens):
         # embed tokens and positions
-        x = embed = self.embed_scale * self._token_embedder(src_tokens)
+        embed = self.embed_scale * self._token_embedder(src_tokens)
         x = embed + self._pos_embedder(src_tokens)
         return x, embed
 
