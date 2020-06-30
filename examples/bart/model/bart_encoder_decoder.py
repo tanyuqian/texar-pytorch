@@ -12,20 +12,20 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
     def __init__(self, pretrained_model_name='bart.large', hparams=None):
         EncoderDecoderBase.__init__(self=self, hparams=hparams)
 
-        self._tokenizer = BARTTokenizer()
+        self.tokenizer = BARTTokenizer()
 
-        self._token_embedder = WordEmbedder(
-            vocab_size=self._tokenizer.vocab_size,
+        self.token_embedder = WordEmbedder(
+            vocab_size=self.tokenizer.vocab_size,
             hparams=self._hparams.token_embedder)
 
-        self._encoder = BARTEncoder(
-            pad_id=self._tokenizer.pad_id,
-            token_embedder=self._token_embedder,
+        self.encoder = BARTEncoder(
+            pad_id=self.tokenizer.pad_id,
+            token_embedder=self.token_embedder,
             hparams=self._hparams.encoder)
 
-        self._decoder = BARTDecoder(
-            pad_id=self._tokenizer.pad_id,
-            token_embedder=self._token_embedder,
+        self.decoder = BARTDecoder(
+            pad_id=self.tokenizer.pad_id,
+            token_embedder=self.token_embedder,
             hparams=self._hparams.decoder)
 
         self.init_pretrained_weights(
@@ -33,7 +33,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         self.smoothed_loss_func = LabelSmoothingLoss(
             label_confidence=self._hparams.loss_label_confidence,
-            tgt_vocab_size=self._token_embedder.vocab_size,
+            tgt_vocab_size=self.token_embedder.vocab_size,
             ignore_index=0)
 
     def forward(self, src_tokens, src_lengths, decoder_input=None, labels=None,

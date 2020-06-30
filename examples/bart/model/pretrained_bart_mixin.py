@@ -29,9 +29,9 @@ class PretrainedBARTMixin(PretrainedMixin):
             cache_dir, self._MODEL2CKPT[pretrained_model_name])
         ckpt_state_dict = torch.load(checkpoint_path)
 
-        self.state_dict()['_token_embedder._embedding'].copy_(
+        self.state_dict()['token_embedder._embedding'].copy_(
             ckpt_state_dict['encoder.embed_tokens.weight'])
-        self.state_dict()['_encoder._pos_embedder.weight'].copy_(
+        self.state_dict()['encoder._pos_embedder.weight'].copy_(
             ckpt_state_dict['encoder.embed_positions.weight'])
 
     def _transform_config(cls, pretrained_model_name: str,
