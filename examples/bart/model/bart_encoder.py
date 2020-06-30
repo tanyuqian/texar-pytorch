@@ -34,9 +34,6 @@ class BARTEncoder(ModuleBase):
         encoder_outputs = self._transformer_encoder(
             inputs=x, sequence_length=src_lengths)
 
-        print(encoder_outputs)
-        raise ValueError
-
         return encoder_outputs
 
     @staticmethod
