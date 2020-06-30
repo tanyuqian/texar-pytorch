@@ -19,7 +19,7 @@ from model.bart_encoder_decoder import BART
 # else:
 #     raise ValueError('Tokenizer Check Failed!!!')
 
-bart = BART()._decoder
+bart = BART()
 
 # print(bart)
 
