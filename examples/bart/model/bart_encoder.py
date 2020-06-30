@@ -32,7 +32,7 @@ class BARTEncoder(ModuleBase):
         x, encoder_embedding = self.forward_embedding(src_tokens)
 
         print(x)
-        exit()
+        raise ValueError
 
         return self._transformer_encoder(inputs=x, sequence_length=src_lengths)
 
