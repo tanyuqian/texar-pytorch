@@ -5,10 +5,11 @@ from .bart_tokenizer import BARTTokenizer
 from .bart_encoder import BARTEncoder
 from .bart_decoder import BARTDecoder
 from .label_smoothing_loss import LabelSmoothingLoss
+from .pretrained_bart_mixin import PretrainedBARTMixin
 
 
-class BART(EncoderDecoderBase):
-    def __init__(self, hparams=None):
+class BART(EncoderDecoderBase, PretrainedBARTMixin):
+    def __init__(self, pretrained_model_name='bart.large', hparams=None):
         EncoderDecoderBase.__init__(self=self, hparams=hparams)
 
         self._tokenizer = BARTTokenizer()
@@ -26,6 +27,9 @@ class BART(EncoderDecoderBase):
             pad_id=self._tokenizer.pad_id,
             token_embedder=self._token_embedder,
             hparams=self._hparams.decoder)
+
+        self.init_pretrained_weights(
+            pretrained_model_name=pretrained_model_name, cache_dir='.')
 
         self.smoothed_loss_func = LabelSmoothingLoss(
             label_confidence=self._hparams.loss_label_confidence,
