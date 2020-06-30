@@ -24,17 +24,20 @@ class BARTEncoder(ModuleBase):
 
     def forward_embedding(self, src_tokens):
         # embed tokens and positions
-        embed = self.embed_scale * self._token_embedder(src_tokens)
-        x = embed + self._pos_embedder(src_tokens)
+        embed = self.embed_scale * self.token_embedder(src_tokens)
+        x = embed + self.pos_embedder(src_tokens)
         return x, embed
 
     def forward(self, src_tokens, src_lengths):
         x, encoder_embedding = self.forward_embedding(src_tokens)
 
-        print(x)
+        encoder_outputs = self._transformer_encoder(
+            inputs=x, sequence_length=src_lengths)
+
+        print(encoder_outputs)
         raise ValueError
 
-        return self._transformer_encoder(inputs=x, sequence_length=src_lengths)
+        return encoder_outputs
 
     @staticmethod
     def default_hparams():
