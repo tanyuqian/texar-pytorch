@@ -78,7 +78,8 @@ class PretrainedBARTMixin(PretrainedMixin):
             for c in ['Q', 'K', 'V', 'O']:
                 for temp_ours, temp_ckpt in layer_c_map.items():
                     ours_name = temp_ours.format(layer=layer, c=c)
-                    ckpt_name = temp_ckpt.format(layer=layer, c=c.lower())
+                    ckpt_name = temp_ckpt.format(
+                        layer=layer, c=c.lower() if c != 'O' else 'out')
                     self.state_dict()[ours_name].copy_(
                         ckpt_state_dict[ckpt_name])
 
