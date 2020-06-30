@@ -8,7 +8,7 @@ from texar.torch.modules.pretrained.pretrained_base import PretrainedMixin
 class PretrainedBARTMixin(PretrainedMixin):
     _MODEL_NAME = "BART"
     _MODEL2URL = {
-        'bart.large': 'https://dl.fbaipublicfiles.com/fairseq/models/bart.large.tar.gz'
+        'bart.large': 'https://drive.google.com/file/d/1IvBWpjjfcEK7LBIsZbw37rUiLHqnLW77/view?usp=sharing'
     }
     _MODEL2CKPT = {
         'bart.large': 'model.pt'
@@ -29,11 +29,11 @@ class PretrainedBARTMixin(PretrainedMixin):
             cache_dir, self._MODEL2CKPT[pretrained_model_name])
         ckpt_state_dict = torch.load(checkpoint_path)['model']
 
-        # for key, value in ckpt_state_dict.items():
-        #     print(key, value.shape)
+        for key, value in ckpt_state_dict.items():
+            print(key, value.shape)
 
         # encoder
-        for layer in range(12):
+        # for layer in range(12):
             # encoder.layers.0.self_attn.in_proj_weight
             # _encoder._transformer_encoder.self_attns.0.Q_dense.weight
 
@@ -45,4 +45,5 @@ class PretrainedBARTMixin(PretrainedMixin):
 
 if __name__ == '__main__':
     bart_mixin = PretrainedBARTMixin()
-    bart_mixin.init_pretrained_weights(pretrained_model_name='bart.large', cache_dir='.')
+    bart_mixin.init_pretrained_weights(
+        pretrained_model_name='bart.large', cache_dir='.')
