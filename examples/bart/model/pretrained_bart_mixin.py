@@ -31,7 +31,7 @@ class PretrainedBARTMixin(PretrainedMixin):
 
         self.state_dict()['token_embedder._embedding'].copy_(
             ckpt_state_dict['encoder.embed_tokens.weight'])
-        self.state_dict()['encoder._pos_embedder.weight'].copy_(
+        self.state_dict()['encoder.pos_embedder.weight'].copy_(
             ckpt_state_dict['encoder.embed_positions.weight'])
 
     def _transform_config(cls, pretrained_model_name: str,
