@@ -70,12 +70,12 @@ class PretrainedBARTMixin(PretrainedMixin):
         for layer in range(12):
             for temp_ours, temp_ckpt in layer_map.items():
                 self.state_dict()[temp_ours.format(layer=layer)].copy_(
-                    temp_ckpt.format(layer=layer))
+                    ckpt_state_dict[temp_ckpt.format(layer=layer)])
 
             for c in ['Q', 'K', 'V', 'O']:
                 for temp_ours, temp_ckpt in layer_c_map.items():
                     self.state_dict()[temp_ours.format(layer=layer, c=c)].copy_(
-                        temp_ckpt.format(layer=layer, c=c))
+                        ckpt_state_dict[temp_ckpt.format(layer=layer, c=c)])
 
 
     def _transform_config(cls, pretrained_model_name: str,
