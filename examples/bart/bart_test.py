@@ -34,6 +34,7 @@ assert input_ids == fs_input_ids
 
 src_tokens = torch.tensor([input_ids])
 src_lengths = torch.tensor([len(input_ids)])
+decoder_input = torch.tensor([input_ids])
 
 # print(bart)
 
@@ -46,6 +47,6 @@ for name, param in bart.named_parameters():
 # print(total_numel)
 
 try:
-    bart(src_tokens=src_tokens, src_lengths=src_lengths)
+    bart(src_tokens=src_tokens, src_lengths=src_lengths, decoder_input=decoder_input)
 except:
-    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=None)
+    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=decoder_input)
