@@ -36,13 +36,26 @@ class PretrainedBARTMixin(PretrainedMixin):
                 'encoder.layernorm_embedding.weight',
             'encoder._transformer_encoder.input_normalizer.bias':
                 'encoder.layernorm_embedding.bias',
+            'decoder._pos_embedder.weight': 'decoder.embed_positions.weight',
+            'decoder._layernorm_embedding.weight':
+                'decoder.layernorm_embedding.weight',
+            'decoder._layernorm_embedding.bias':
+                'decoder.layernorm_embedding.bias',
         }
 
         layer_c_map = {
             'encoder._transformer_encoder.self_attns.{layer}.{c}_dense.weight':
                 'encoder.layers.{layer}.self_attn.{c}_proj.weight',
             'encoder._transformer_encoder.self_attns.{layer}.{c}_dense.bias':
-                'encoder.layers.{layer}.self_attn.{c}_proj.bias'
+                'encoder.layers.{layer}.self_attn.{c}_proj.bias',
+            'decoder._transformer_decoder.self_attns.{layer}.{c}_dense.weight':
+                'decoder.layers.{layer}.self_attn.{c}_proj.weight',
+            'decoder._transformer_decoder.self_attns.{layer}.{c}_dense.bias':
+                'decoder.layers.{layer}.self_attn.{c}_proj.bias',
+            'decoder._transformer_decoder.enc_dec_attns.{layer}.{c}_dense.'
+            'weight': 'decoder.layers.{layer}.encoder_attn.{c}_proj.weight',
+            'decoder._transformer_decoder.enc_dec_attns.{layer}.{c}_dense.'
+            'bias': 'decoder.layers.{layer}.encoder_attn.{c}_proj.bias',
         }
 
         layer_map = {
@@ -61,7 +74,27 @@ class PretrainedBARTMixin(PretrainedMixin):
             'encoder._transformer_encoder.poswise_layer_norm.{layer}.weight':
                 'encoder.layers.{layer}.self_attn_layer_norm.weight',
             'encoder._transformer_encoder.poswise_layer_norm.{layer}.bias':
-                'encoder.layers.{layer}.self_attn_layer_norm.bias'
+                'encoder.layers.{layer}.self_attn_layer_norm.bias',
+            'decoder._transformer_decoder.self_attn_layer_norm.{layer}.weight':
+                'decoder.layers.{layer}.self_attn_layer_norm.weight',
+            'decoder._transformer_decoder.self_attn_layer_norm.{layer}.bias':
+                'decoder.layers.{layer}.self_attn_layer_norm.bias',
+            'decoder._transformer_decoder.end_dec_attn_layer_norm.{layer}.'
+            'weight': 'decoder.layers.{layer}.encoder_attn_layer_norm.weight',
+            'decoder._transformer_decoder.end_dec_attn_layer_norm.{layer}.'
+            'bias': 'decoder.layers.{layer}.encoder_attn_layer_norm.bias',
+            'decoder._transformer_decoder.poswise_networks.{layer}._layers.0.'
+            'weight': 'decoder.layers.{layer}.fc1.weight',
+            'decoder._transformer_decoder.poswise_networks.{layer}._layers.0.'
+            'bias': 'decoder.layers.{layer}.fc1.bias',
+            'decoder._transformer_decoder.poswise_networks.{layer}._layers.3.'
+            'weight': 'decoder.layers.{layer}.fc2.weight',
+            'decoder._transformer_decoder.poswise_networks.{layer}._layers.3.'
+            'bias': 'decoder.layers.{layer}.fc2.bias',
+            'decoder._transformer_decoder.poswise_layer_norm.{layer}.weight':
+                'decoder.layers.{layer}.final_layer_norm.weight',
+            'decoder._transformer_decoder.poswise_layer_norm.{layer}.bias':
+                'decoder.layers.{layer}.final_layer_norm.bias',
         }
 
         for temp_ours, temp_ckpt in no_cond_map.items():
