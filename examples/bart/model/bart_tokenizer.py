@@ -45,5 +45,13 @@ class BARTTokenizer:
         return self._pad_id
 
     @property
+    def bos_id(self):
+        return self._bos_id
+
+    @property
+    def eos_id(self):
+        return self._eos_id
+
+    @property
     def vocab_size(self):
         return max(self._gpt2_to_bart.values()) + 1

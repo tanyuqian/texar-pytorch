@@ -57,7 +57,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         else:
             start_tokens = src_tokens.new_full(
-                (src_tokens.shape[0],), self.vocab.bos_token_id)
+                (src_tokens.shape[0],), self.tokenizer.bos_id)
 
             predictions = self.decoder(
                 memory=encoder_output,
