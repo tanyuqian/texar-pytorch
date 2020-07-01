@@ -63,10 +63,10 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
                 memory=encoder_output,
                 memory_sequence_length=src_lengths,
                 beam_width=beam_width,
-                length_penalty=self.config_model.length_penalty,
+                length_penalty=2.,
                 start_tokens=start_tokens,
-                end_token=self.vocab.eos_token_id,
-                max_decoding_length=self.config_data.max_decoding_length,
+                end_token=self.tokenizer.eos_id,
+                max_decoding_length=140,
                 decoding_strategy="infer_greedy",
             )
             # Uses the best sample by beam search
