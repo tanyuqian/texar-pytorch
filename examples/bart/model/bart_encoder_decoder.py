@@ -51,13 +51,6 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
         return decoder_output
 
     def extract_features(self, tokens):
-        if tokens.dim() == 1:
-            tokens = tokens.unsqueeze(0)
-        if tokens.size(-1) > min(self.model.max_positions()):
-            raise ValueError('tokens exceeds maximum length: {} > {}'.format(
-                tokens.size(-1), self.model.max_positions()
-            ))
-        tokens.to(device=self.device),
         prev_output_tokens = tokens.clone()
 
         prev_output_tokens[:, 0] = tokens.gather(
