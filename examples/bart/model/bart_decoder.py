@@ -29,7 +29,7 @@ class BARTDecoder(ModuleBase):
             output_layer=self._token_embedder.embedding,
             hparams=self._hparams.transformer)
 
-    def forward_embedding(self, tokens, _):
+    def forward_embedding(self, tokens, *args, **kwargs):
         x = self._token_embedder(tokens) + self._pos_embedder(tokens)
 
         if self._hparams.layernorm_embedding:
@@ -46,13 +46,13 @@ class BARTDecoder(ModuleBase):
         return {
             'max_positions': 1024,
             'layernorm_embedding': True,
-            "residual_dropout": 0.1,
-            'normalize_before': False,
-            'final_layer_norm': False,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
                 "eps": 1e-5,
+                "residual_dropout": 0.1,
+                'normalize_before': False,
+                'final_layer_norm': False,
                 "multihead_attention": {
                     "dropout_rate": 0.1,
                     "name": "multihead_attention",
