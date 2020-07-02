@@ -153,8 +153,8 @@ class MultiheadAttentionEncoder(EncoderBase):
             in_proj_weight=torch.empty([0]),
             in_proj_bias=torch.cat((
                 self.Q_dense.bias, self.K_dense.bias, self.V_dense.bias)),
-            bias_k=self.K_dense.bias,
-            bias_v=self.V_dense.bias,
+            bias_k=None,
+            bias_v=None,
             add_zero_attn=False,
             dropout_p=self._hparams.dropout_rate,
             out_proj_weight=self.O_dense.weight,
