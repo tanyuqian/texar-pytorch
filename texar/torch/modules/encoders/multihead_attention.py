@@ -151,7 +151,7 @@ class MultiheadAttentionEncoder(EncoderBase):
             embed_dim_to_check=self._hparams.num_units,
             num_heads=self._hparams.num_heads,
             in_proj_weight=torch.empty([0]),
-            in_prog_bias=torch.cat((
+            in_proj_bias=torch.cat((
                 self.Q_dense.bias, self.K_dense.bias, self.V_dense.bias)),
             bias_k=self._hparams.use_bias,
             bias_v=self._hparams.use_bias,
