@@ -3,7 +3,7 @@ from torch import nn
 
 from model.bart_encoder_decoder import BART
 
-from fairseq.models.bart.model import BARTModel
+from fairseq.models.bart import BARTHubInterface
 from fairseq.models.transformer import TransformerEncoder
 
 
@@ -32,22 +32,8 @@ fs_input_ids = fs_bart.encode(example).tolist()
 
 assert input_ids == fs_input_ids
 
-src_tokens = torch.tensor([input_ids])
-src_lengths = torch.tensor([len(input_ids)])
-decoder_input = torch.tensor([input_ids])
+tokens = torch.tensor([input_ids])
 
-# print(bart)
-
-# print(len(list(bart.named_parameters())))
-#
-# total_numel = 0
-# for name, param in bart.named_parameters():
-#     print(name, param.shape)
-#     total_numel += param.numel()
-# print(total_numel)
-
-try:
-    bart(src_tokens=src_tokens, src_lengths=src_lengths,
-         decoder_input=decoder_input, labels=decoder_input)
-except:
-    fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=decoder_input)
+print(bart.extract_features(tokens=tokens))
+print('=' * 50)
+print(fs_bart.extract_features(tokens=tokens))

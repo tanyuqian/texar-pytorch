@@ -36,41 +36,43 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             tgt_vocab_size=self.token_embedder.vocab_size,
             ignore_index=0)
 
-    def forward(self, src_tokens, src_lengths, decoder_input=None, labels=None,
-                beam_width=None):
+    def forward(self, src_tokens, src_lengths, decoder_input,
+                features_only=False):
         encoder_output = self.encoder(
             src_tokens=src_tokens, src_lengths=src_lengths)
 
-        if decoder_input is not None and labels is not None:
-            outputs = self.decoder(
-                memory=encoder_output,
-                memory_sequence_length=src_lengths,
-                inputs=decoder_input,
-                decoding_strategy="train_greedy",
-            )
-            label_lengths = (labels != 0).long().sum(dim=1)
-            is_target = (labels != 0).float()
-            mle_loss = self.smoothed_loss_func(
-                outputs.logits, labels, label_lengths)
-            mle_loss = (mle_loss * is_target).sum() / is_target.sum()
-            return mle_loss
+        decoder_output = self.decoder(
+            memory=encoder_output,
+            memory_sequence_length=src_lengths,
+            inputs=decoder_input,
+            decoding_strategy="train_greedy",
+            features_only=features_only)
 
-        else:
-            start_tokens = src_tokens.new_full(
-                (src_tokens.shape[0],), self.tokenizer.bos_id)
+        return decoder_output
 
-            predictions = self.decoder(
-                memory=encoder_output,
-                memory_sequence_length=src_lengths,
-                beam_width=beam_width,
-                length_penalty=2.,
-                start_tokens=start_tokens,
-                end_token=self.tokenizer.eos_id,
-                max_decoding_length=140,
-                decoding_strategy="infer_greedy",
-            )
-            # Uses the best sample by beam search
-            return predictions
+    def extract_features(self, tokens):
+        if tokens.dim() == 1:
+            tokens = tokens.unsqueeze(0)
+        if tokens.size(-1) > min(self.model.max_positions()):
+            raise ValueError('tokens exceeds maximum length: {} > {}'.format(
+                tokens.size(-1), self.model.max_positions()
+            ))
+        tokens.to(device=self.device),
+        prev_output_tokens = tokens.clone()
+
+        prev_output_tokens[:, 0] = tokens.gather(
+            1, (tokens.ne(self.tokenizer.pad_id).sum(dim=1) - 1).unsqueeze(-1),
+        ).squeeze()
+
+        prev_output_tokens[:, 1:] = tokens[:, :-1]
+
+        features = self.forward(
+            src_tokens=tokens,
+            src_lengths=None,
+            decoder_input=prev_output_tokens,
+            features_only=True)
+
+        return features
 
     @staticmethod
     def default_hparams():
