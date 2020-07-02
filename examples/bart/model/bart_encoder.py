@@ -29,6 +29,10 @@ class BARTEncoder(ModuleBase):
 
         return encoder_outputs
 
+    @property
+    def output_size(self):
+        return self._transformer_encoder.output_size
+
     @staticmethod
     def default_hparams():
         return {

@@ -1,3 +1,6 @@
+import torch
+from torch import nn
+
 from texar.torch.modules.encoder_decoders import EncoderDecoderBase
 from texar.torch.modules import WordEmbedder
 
@@ -27,6 +30,11 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             token_embedder=self.token_embedder,
             hparams=self._hparams.decoder)
 
+        self.heads = {}
+        if 'mnli' in pretrained_model_name:
+            self.register_classification_head(
+                name='mnli', num_classes=3, hidden_dims=[1024])
+
         self.init_pretrained_weights(
             pretrained_model_name=pretrained_model_name, cache_dir='.')
 
@@ -53,9 +61,6 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         prev_output_tokens[:, 1:] = tokens[:, :-1]
 
-        print(tokens)
-        print(lengths)
-
         features = self.forward(
             src_tokens=tokens,
             src_lengths=lengths,
@@ -64,11 +69,28 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return features
 
+    def register_classification_head(self, name, num_classes, hidden_dims):
+        if name in self.heads:
+            raise ValueError(f'head named {name} is already registered.')
+
+        # dim_list = [self.decoder.output_size] + hidden_dims
+        self.heads[name] = nn.ModuleList()
+        for i in range(len(hidden_dims)):
+            u = hidden_dims[i - 1] if i != 0 else self.decoder.output_size
+            v = hidden_dims[i]
+            self.heads[name].extend([
+                nn.Linear(u, v), nn.Dropout(self._hparams.heads_dropout)])
+
+        u = hidden_dims[-1] if len(hidden_dims) > 0 \
+            else self.decoder.output_size
+        self.heads[name].append(nn.Linear(u, num_classes))
+
     @staticmethod
     def default_hparams():
         return {
             'token_embedder': {'dim': 1024},
             'loss_label_confidence': 0.9,
+            'heads_dropout': 0.1,
             'encoder': None,
             'decoder': None
         }

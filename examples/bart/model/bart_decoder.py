@@ -41,6 +41,10 @@ class BARTDecoder(ModuleBase):
     def forward(self):
         return self._transformer_decoder.forward
 
+    @property
+    def output_size(self):
+        return self._transformer_decoder.output_size
+
     @staticmethod
     def default_hparams():
         return {

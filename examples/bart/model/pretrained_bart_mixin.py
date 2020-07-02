@@ -8,14 +8,18 @@ from texar.torch.modules.pretrained.pretrained_base import PretrainedMixin
 class PretrainedBARTMixin(PretrainedMixin):
     _MODEL_NAME = "BART"
     _MODEL2URL = {
-        'bart.large': 'https://drive.google.com/file/d/1IvBWpjjfcEK7LBIsZbw37rUiLHqnLW77/view?usp=sharing'
+        'bart.large': 'https://drive.google.com/file/d/1IvBWpjjfcEK7LBIsZbw37rUiLHqnLW77/view?usp=sharing',
+        'bart.large.cnn': 'https://drive.google.com/file/d/1HWL_4wmoUC9JooT1r4KCOlm2Awcpcjfj/view?usp=sharing',
+        'bart.large.mnli': 'https://drive.google.com/file/d/1lo2PAmfmCsRT0g7SWa2_J8YpafX1JBcS/view?usp=sharing'
     }
     _MODEL2CKPT = {
-        'bart.large': 'model.pt'
+        'bart.large': 'model.pt',
+        'bart.large.cnn': 'model.pt',
+        'bart.large.mnli': 'model.pt'
     }
 
     def __init__(self):
-        pass
+        PretrainedMixin.__init__(self)
 
     def init_pretrained_weights(self, pretrained_model_name, cache_dir):
         self.pretrained_model_dir = self.download_checkpoint(

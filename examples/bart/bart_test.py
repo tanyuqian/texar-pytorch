@@ -17,6 +17,9 @@ bart = BART()
 bart.eval()
 input_ids = bart.encode(example)
 
+for name, param in bart.named_parameters():
+    print(name, param.shape)
+
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large')
 fs_bart.eval()
 fs_input_ids = fs_bart.encode(example).tolist()
