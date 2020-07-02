@@ -59,6 +59,9 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         prev_output_tokens[:, 1:] = tokens[:, :-1]
 
+        print(tokens)
+        print(lengths)
+
         features = self.forward(
             src_tokens=tokens,
             src_lengths=lengths,

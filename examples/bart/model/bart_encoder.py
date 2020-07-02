@@ -1,3 +1,5 @@
+import math
+
 from .learned_positional_embedding import LearnedPositionalEmbedding
 
 from texar.torch.modules import TransformerEncoder
@@ -31,6 +33,7 @@ class BARTEncoder(ModuleBase):
     def default_hparams():
         return {
             'max_positions': 1024,
+            'embedding_dim': 1024,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
