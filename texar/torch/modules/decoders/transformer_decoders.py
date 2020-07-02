@@ -323,6 +323,7 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
     def forward(self,  # type: ignore
                 inputs: Optional[torch.Tensor] = None,
                 sequence_length: Optional[torch.LongTensor] = None,
+                features_only: Optional[bool] = False,
                 memory: Optional[torch.Tensor] = None,
                 memory_sequence_length: Optional[torch.LongTensor] = None,
                 memory_attention_bias: Optional[torch.Tensor] = None,
@@ -544,10 +545,14 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             decoder_output = self._self_attention_stack(
                 inputs, memory, decoder_self_attention_bias,
                 memory_attention_bias, cache=None)
-            logits = self._output_layer(decoder_output)
-            sample_id = torch.argmax(logits, dim=-1)
 
-            return TransformerDecoderOutput(logits, sample_id)
+            if features_only:
+                return decoder_output
+            else:
+                logits = self._output_layer(decoder_output)
+                sample_id = torch.argmax(logits, dim=-1)
+
+                return TransformerDecoderOutput(logits, sample_id)
 
         # Inference code path.
         if max_decoding_length is None:
