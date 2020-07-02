@@ -287,6 +287,7 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             'max_decoding_length': int(1e10),
             'embedding_dropout': 0.1,
             'residual_dropout': 0.1,
+            'normalize_before': True,
             'final_layer_norm': True,
             'poswise_feedforward': default_transformer_poswise_net_hparams(dim),
             'multihead_attention': {
@@ -652,26 +653,35 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
         for i in range(self._hparams.num_blocks):
             layer_cache = cache['layers'][i] if cache is not None else None
 
+            queries = self.self_attn_layer_norm[i](x) \
+                if self._hparams.normalize_before else x
             selfatt_output = self.self_attns[i](
-                queries=x,
+                queries=queries,
                 memory=None,
                 memory_attention_bias=decoder_self_attention_bias,
                 cache=layer_cache)
 
             x = x + self.residual_dropout(selfatt_output)
-            x = self.self_attn_layer_norm[i](x)
+            if not self._hparams.normalize_before:
+                x = self.self_attn_layer_norm[i](x)
 
             if memory is not None:
+                queries = self.end_dec_attn_layer_norm[i](x) \
+                    if self._hparams.normalize_before else x
                 encdec_output = self.enc_dec_attns[i](
-                    queries=x,
+                    queries=queries,
                     memory=memory,
                     memory_attention_bias=memory_attention_bias)
                 x = x + self.residual_dropout(encdec_output)
-                x = self.end_dec_attn_layer_norm[i](x)
+                if not self._hparams.normalize_before:
+                    x = self.end_dec_attn_layer_norm[i](x)
 
+            poswise_input = self.poswise_layer_norm[i](x) \
+                if self._hparams.normalize_before else x
             sub_output = self.poswise_networks[i](x)
             x = x + self.residual_dropout(sub_output)
-            x = self.poswise_layer_norm[i](x)
+            if not self._hparams.normalize_before:
+                x = self.poswise_layer_norm[i](x)
 
         if self._hparams.final_layer_norm:
             x = self.final_layer_norm(x)
