@@ -41,8 +41,8 @@ decoder_input = torch.tensor([input_ids])
 # print(len(list(bart.named_parameters())))
 #
 # total_numel = 0
-for name, param in bart.named_parameters():
-    print(name, param.shape)
+# for name, param in bart.named_parameters():
+#     print(name, param.shape)
 #     total_numel += param.numel()
 # print(total_numel)
 
