@@ -1,5 +1,3 @@
-import math
-
 from .learned_positional_embedding import LearnedPositionalEmbedding
 
 from texar.torch.modules import TransformerEncoder
@@ -13,26 +11,19 @@ class BARTEncoder(ModuleBase):
         self.token_embedder = token_embedder
         self.pos_embedder = LearnedPositionalEmbedding(
             num_embeddings=self._hparams.max_positions + pad_id + 1,
-            embedding_dim=self._hparams.embedding_dim,
+            embedding_dim=self.token_embedder.dim,
             padding_idx=pad_id)
-
-        self.embed_scale = 1.0 if self._hparams.no_scale_embedding else \
-            math.sqrt(self._hparams.embedding_dim)
 
         self._transformer_encoder = TransformerEncoder(
             hparams=self._hparams.transformer.todict())
 
     def forward_embedding(self, src_tokens):
-        # embed tokens and positions
-        embed = self.embed_scale * self.token_embedder(src_tokens)
-        x = embed + self.pos_embedder(src_tokens)
-        return x, embed
+        return self.token_embedder(src_tokens) + self.pos_embedder(src_tokens)
 
     def forward(self, src_tokens, src_lengths):
-        x, encoder_embedding = self.forward_embedding(src_tokens)
-
         encoder_outputs = self._transformer_encoder(
-            inputs=x, sequence_length=src_lengths)
+            inputs=self.forward_embedding(src_tokens),
+            sequence_length=src_lengths)
 
         return encoder_outputs
 
@@ -40,8 +31,6 @@ class BARTEncoder(ModuleBase):
     def default_hparams():
         return {
             'max_positions': 1024,
-            'embedding_dim': 1024,
-            'no_scale_embedding': True,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,

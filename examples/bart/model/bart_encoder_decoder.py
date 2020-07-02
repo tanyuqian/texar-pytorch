@@ -1,5 +1,3 @@
-import torch
-
 from texar.torch.modules.encoder_decoders import EncoderDecoderBase
 from texar.torch.modules import WordEmbedder
 
@@ -52,7 +50,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return decoder_output
 
-    def extract_features(self, tokens):
+    def extract_features(self, tokens, lengths):
         prev_output_tokens = tokens.clone()
 
         prev_output_tokens[:, 0] = tokens.gather(
@@ -61,11 +59,9 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         prev_output_tokens[:, 1:] = tokens[:, :-1]
 
-        src_lengths = torch.tensor([tokens.shape[1]] * tokens.shape[0])
-
         features = self.forward(
             src_tokens=tokens,
-            src_lengths=src_lengths,
+            src_lengths=lengths,
             decoder_input=prev_output_tokens,
             features_only=True)
 

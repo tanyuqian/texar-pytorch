@@ -1,5 +1,3 @@
-import math
-
 import torch
 from torch import nn
 
@@ -16,13 +14,8 @@ class BARTDecoder(ModuleBase):
         self._token_embedder = token_embedder
         self._pos_embedder = LearnedPositionalEmbedding(
             num_embeddings=self._hparams.max_positions + pad_id + 1,
-            embedding_dim=self._hparams.embedding_dim,
+            embedding_dim=token_embedder.dim,
             padding_idx=pad_id)
-
-        self.embed_scale = 1.0 if self._hparams.no_scale_embedding else \
-            math.sqrt(self._hparams.embedding_dim)
-
-        assert token_embedder.dim == self._hparams.embedding_dim
 
         if self._hparams.layernorm_embedding:
             self._layernorm_embedding = nn.LayerNorm(
@@ -36,14 +29,13 @@ class BARTDecoder(ModuleBase):
             output_layer=self._token_embedder.embedding,
             hparams=self._hparams.transformer)
 
-    def _embedding_fn(self, tokens, _):
-        x = self.embed_scale * self._token_embedder(tokens)
-        x = x + self._pos_embedder(tokens)
+    def forward_embedding(self, tokens, *args, **kwargs):
+        x = self._token_embedder(tokens) + self._pos_embedder(tokens)
 
         if self._hparams.layernorm_embedding:
-            x = self._layernorm_embedding(x)
-
-        return x
+            return self._layernorm_embedding(x)
+        else:
+            return x
 
     @property
     def forward(self):
@@ -53,9 +45,10 @@ class BARTDecoder(ModuleBase):
     def default_hparams():
         return {
             'max_positions': 1024,
-            'embedding_dim': 1024,
-            'no_scale_embedding': True,
             'layernorm_embedding': True,
+            "residual_dropout": 0.1,
+            'normalize_before': False,
+            'final_layer_norm': False,
             'transformer': {
                 "dim": 1024,
                 "embedding_dropout": 0.1,
@@ -100,9 +93,6 @@ class BARTDecoder(ModuleBase):
                         }
                     ],
                     "name": "ffn"
-                },
-                "residual_dropout": 0.1,
-                'normalize_before': False,
-                'final_layer_norm': False
+                }
             }
         }
