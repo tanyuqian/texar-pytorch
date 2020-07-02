@@ -663,13 +663,15 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
 
             if memory is not None:
                 encdec_output = self.enc_dec_attns[i](
-                    queries=self.end_dec_attn_layer_norm[i](x),
+                    queries=x,
                     memory=memory,
                     memory_attention_bias=memory_attention_bias)
                 x = x + self.residual_dropout(encdec_output)
+                x = self.end_dec_attn_layer_norm[i](x)
 
-            sub_output = self.poswise_networks[i](self.poswise_layer_norm[i](x))
+            sub_output = self.poswise_networks[i](x)
             x = x + self.residual_dropout(sub_output)
+            x = self.poswise_layer_norm[i](x)
 
         if self._hparams.final_layer_norm:
             x = self.final_layer_norm(x)
