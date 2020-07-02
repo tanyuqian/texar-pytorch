@@ -669,7 +669,7 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             sub_output = self.poswise_networks[i](self.poswise_layer_norm[i](x))
             x = x + self.residual_dropout(sub_output)
 
-        if self._params.final_layer_norm:
+        if self._hparams.final_layer_norm:
             x = self.final_layer_norm(x)
         return x
 
