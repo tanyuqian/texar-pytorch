@@ -4,7 +4,6 @@ from texar.torch.modules import WordEmbedder
 from .bart_tokenizer import BARTTokenizer
 from .bart_encoder import BARTEncoder
 from .bart_decoder import BARTDecoder
-from .label_smoothing_loss import LabelSmoothingLoss
 from .pretrained_bart_mixin import PretrainedBARTMixin
 
 
@@ -30,11 +29,6 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         self.init_pretrained_weights(
             pretrained_model_name=pretrained_model_name, cache_dir='.')
-
-        self.smoothed_loss_func = LabelSmoothingLoss(
-            label_confidence=self._hparams.loss_label_confidence,
-            tgt_vocab_size=self.token_embedder.vocab_size,
-            ignore_index=0)
 
     def forward(self, src_tokens, src_lengths, decoder_input,
                 features_only=False):
