@@ -135,39 +135,6 @@ class MultiheadAttentionEncoder(EncoderBase):
             'name': 'multihead_attention',
         }
 
-    def forward_pytorch_version(
-            self,
-            query, key, value,
-            key_padding_mask=None,
-            incremental_state=None,
-            need_weights=True,
-            static_kv=False,
-            attn_mask=None,
-            before_softmax=False,
-            need_head_weights=False,
-    ):
-        return F.multi_head_attention_forward(
-            query=query, key=key, value=value,
-            embed_dim_to_check=self._hparams.num_units,
-            num_heads=self._hparams.num_heads,
-            in_proj_weight=torch.empty([0]),
-            in_proj_bias=torch.cat((
-                self.Q_dense.bias, self.K_dense.bias, self.V_dense.bias)),
-            bias_k=None,
-            bias_v=None,
-            add_zero_attn=False,
-            dropout_p=self._hparams.dropout_rate,
-            out_proj_weight=self.O_dense.weight,
-            out_proj_bias=self.O_dense.bias,
-            training=self.training,
-            key_padding_mask=key_padding_mask,
-            need_weights=need_weights,
-            attn_mask=attn_mask,
-            use_separate_proj_weight=True,
-            q_proj_weight=self.Q_dense.weight,
-            k_proj_weight=self.K_dense.weight,
-            v_proj_weight=self.V_dense.weight)
-
     def forward(self,  # type: ignore
                 queries: torch.Tensor,
                 memory: torch.Tensor,
@@ -251,7 +218,7 @@ class MultiheadAttentionEncoder(EncoderBase):
         if memory_attention_bias is not None:
             memory_attention_bias = memory_attention_bias.to(
                 device=logits.device)
-            logits += memory_attention_bias * 1e10
+            logits += memory_attention_bias
         weights = torch.softmax(logits, dim=-1)
         weights = F.dropout(weights, self._hparams.dropout_rate, self.training)
         outputs = torch.matmul(weights, V_)

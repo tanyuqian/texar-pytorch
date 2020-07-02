@@ -653,16 +653,13 @@ class TransformerDecoder(DecoderBase[Cache, TransformerDecoderOutput]):
             layer_cache = cache['layers'][i] if cache is not None else None
 
             selfatt_output = self.self_attns[i](
-                queries=self.self_attn_layer_norm[i](x),
+                queries=x,
                 memory=None,
                 memory_attention_bias=decoder_self_attention_bias,
                 cache=layer_cache)
 
-            # selfatt_output = self.self_attns[i].forward_pytorch_version(
-            #     query=x, key=x, value=x,
-            #     attn_mask=decoder_self_attention_bias)
-
             x = x + self.residual_dropout(selfatt_output)
+            x = self.self_attn_layer_norm[i](x)
 
             if memory is not None:
                 encdec_output = self.enc_dec_attns[i](
