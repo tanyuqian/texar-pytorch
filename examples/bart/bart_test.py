@@ -48,6 +48,6 @@ decoder_input = torch.tensor([input_ids])
 
 try:
     bart(src_tokens=src_tokens, src_lengths=src_lengths,
-         decoder_input=decoder_input[:, -1], labels=decoder_input[:, 1:])
+         decoder_input=decoder_input[:, :-1], labels=decoder_input[:, 1:])
 except:
     fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=decoder_input)
