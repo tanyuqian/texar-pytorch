@@ -47,6 +47,7 @@ decoder_input = torch.tensor([input_ids])
 # print(total_numel)
 
 try:
-    bart(src_tokens=src_tokens, src_lengths=src_lengths, decoder_input=decoder_input)
+    bart(src_tokens=src_tokens, src_lengths=src_lengths,
+         decoder_input=decoder_input[:-1], label=decoder_input[1:])
 except:
     fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=decoder_input)
