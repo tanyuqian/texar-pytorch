@@ -24,7 +24,7 @@ class BARTDecoder(ModuleBase):
                 elementwise_affine=True)
 
         self._transformer_decoder = TransformerDecoder(
-            token_pos_embedder=self._embedding_fn,
+            token_pos_embedder=self.forward_embedding(),
             vocab_size=token_embedder.vocab_size,
             output_layer=self._token_embedder.embedding,
             hparams=self._hparams.transformer)
