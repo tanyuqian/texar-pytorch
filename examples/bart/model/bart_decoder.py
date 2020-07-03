@@ -29,8 +29,9 @@ class BARTDecoder(ModuleBase):
             output_layer=self._token_embedder.embedding,
             hparams=self._hparams.transformer)
 
-    def forward_embedding(self, tokens, *args, **kwargs):
-        x = self._token_embedder(tokens) + self._pos_embedder(tokens)
+    def forward_embedding(self, tokens, positions):
+        x = self._token_embedder(tokens) + \
+            self._pos_embedder.forward(positions=positions)
 
         if self._hparams.layernorm_embedding:
             return self._layernorm_embedding(x)

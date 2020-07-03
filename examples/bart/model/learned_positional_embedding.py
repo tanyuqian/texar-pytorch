@@ -19,7 +19,7 @@ class LearnedPositionalEmbedding(nn.Embedding):
         super().__init__(num_embeddings, embedding_dim, padding_idx)
         self.onnx_trace = False
 
-    def forward(self, input, incremental_state=None, positions=None):
+    def forward(self, input=None, incremental_state=None, positions=None):
         """Input is expected to be of size [bsz x seqlen]."""
         assert (
             (positions is None) or (self.padding_idx is None)
