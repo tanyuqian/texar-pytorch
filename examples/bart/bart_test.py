@@ -44,17 +44,18 @@ tgt_tokens = [0]
 for t in range(10):
     logits_ours = bart(
         src_tokens=src_tokens, src_lengths=src_lengths,
-        decoder_input=torch.tensor([tgt_tokens]))
+        decoder_input=torch.tensor([tgt_tokens])).logits
 
     logits_fs = fs_bart.model(
         src_tokens=src_tokens, src_lengths=src_lengths,
         prev_output_tokens=torch.tensor([tgt_tokens]))[0]
 
-    print(f'Step {t}')
+    id = torch.argmax(logits_ours[0]).item()
+    tgt_tokens.append(id)
+
+    print(f'Step {t}: {tgt_tokens}')
     print(logits_ours)
     print(logits_fs)
 
-    id = torch.argmax(logits_ours[0]).item()
-    tgt_tokens.append(id)
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
