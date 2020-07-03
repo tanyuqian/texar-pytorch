@@ -87,8 +87,6 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         self.add_module(name=f'head_{name}', module=self.heads[name])
 
-        print(self.heads[name])
-
     def predict(self, head, tokens, lengths, return_logits=False):
         features = self.extract_features(tokens=tokens, lengths=lengths)
 
