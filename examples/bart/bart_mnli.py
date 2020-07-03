@@ -42,8 +42,11 @@ def main():
                 fs_logits = fs_bart.predict(
                     head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
                 if fs_logits.tolist() != logits[i].tolist():
+                    print(sent1)
+                    print(sent2)
                     print(fs_logits)
                     print(logits[i])
+                    exit()
 
         n_correct += sum([1 for i in range(len(batch))
                           if label_map[preds[i]] == batch[i][-1]])
