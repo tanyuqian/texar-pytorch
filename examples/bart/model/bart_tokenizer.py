@@ -21,10 +21,19 @@ class BARTTokenizer:
         self._bart_to_gpt2 = {
             value: key for key, value in self._gpt2_to_bart.items()}
 
-    def encode(self, text):
+    def encode(self, sentence, *additional_sentences):
         gpt2_ids, len = self._gpt2_tokenizer.encode_text(
-            text=text, max_seq_length=1024, append_eos_token=False)
-        ids = [0] + [self._gpt2_to_bart[str(t)] for t in gpt2_ids[1:len]] + [2]
+            text=sentence, max_seq_length=1024, append_eos_token=False)
+
+        ids = [self.bos_id] + \
+              [self._gpt2_to_bart[str(t)] for t in gpt2_ids[1:len]] + \
+              [self.eos_id]
+
+        for sent in additional_sentences:
+            gpt2_ids, len = self._gpt2_tokenizer.encode_text(
+                text=sent, max_seq_length=1024, append_eos_token=False)
+            ids.extend([self._gpt2_to_bart[str(t)] for t in gpt2_ids[1:len]] +
+                       [self.eos_id])
 
         return ids
 
@@ -35,8 +44,6 @@ class BARTTokenizer:
         for t in token_ids:
             if t != self._eos_id:
                 gpt2_ids.append(int(self._bart_to_gpt2[t]))
-            else:
-                break
 
         return self._gpt2_tokenizer.map_id_to_text(token_ids=gpt2_ids)
 

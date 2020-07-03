@@ -89,6 +89,17 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         print(self.heads[name])
 
+    def predict(self, head, tokens, lengths, return_logits=False):
+        features = self.extract_features(tokens=tokens, lengths=lengths)
+
+        sentence_representation = features[tokens.eq(
+            self.tokenizer.eos_id), :].view(
+            features.size(0), -1, features.size(-1))[:, -1, :]
+
+        logits = self.model.classification_heads[head](sentence_representation)
+
+        return logits if return_logits else torch.log_softmax(logits, dim=-1)
+
     @staticmethod
     def default_hparams():
         return {
