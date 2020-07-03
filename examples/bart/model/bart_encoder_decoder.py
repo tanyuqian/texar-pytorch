@@ -16,6 +16,9 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         self.tokenizer = BARTTokenizer()
 
+        vocab_size = self.tokenizer.vocab_size
+        if 'cnn' in pretrained_model_name:
+            vocab_size -= 1
         self.token_embedder = WordEmbedder(
             vocab_size=self.tokenizer.vocab_size,
             hparams=self._hparams.token_embedder)
