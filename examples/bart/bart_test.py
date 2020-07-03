@@ -39,10 +39,10 @@ lengths = torch.tensor([len(input_ids)])
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-print(bart.generate(src_tokens=tokens, src_lengths=lengths))
-# print(sample_id)
-# print(bart.decode(sample_id))
+sample_id = bart.generate(src_tokens=tokens, src_lengths=lengths)[0].sample_id
+print(sample_id)
+print(bart.decode(sample_id))
 
-print(fs_bart.sample([example], beam=4, lenpen=2.0, max_len_b=140))
+print(fs_bart.sample([example], beam=1, max_len_b=140))
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
