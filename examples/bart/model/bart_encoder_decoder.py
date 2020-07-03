@@ -110,7 +110,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             beam_width=beam_width,
             length_penalty=length_penalty,
             max_decoding_length=max_decoding_length)
-        sample_ids = preds['sample_ids'][:, :, 0]
+        sample_ids = preds['sample_id'][:, :, 0]
 
         tgt_sents = [self.decode(sample_ids[i:, :].tolist())
                      for i in range(len(src_sentences))]
