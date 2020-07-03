@@ -13,32 +13,33 @@ Texar provides a library of easy-to-use ML modules and functionalities for
 composing whatever models and algorithms. The tool is designed for both
 researchers and practitioners for fast prototyping and experimentation.'''
 
-bart = BART(pretrained_model_name='bart.large.cnn')
+bart = BART(pretrained_model_name='bart.large.mnli')
 bart.eval()
-input_ids = bart.encode(example)
+input_ids = bart.encode(
+    'BART is a sequence model.', 'BART is not sequence to sequence.')
 
 # for name, param in bart.named_parameters():
 #     print(name, param.shape)
 # exit()
 
-# fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli')
-# fs_bart.eval()
-# fs_input_ids = fs_bart.encode(
-#     'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
+fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli')
+fs_bart.eval()
+fs_input_ids = fs_bart.encode(
+    'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
 #
-# print(input_ids)
-# print(fs_input_ids)
-# assert input_ids == fs_input_ids
+print(input_ids)
+print(fs_input_ids)
+assert input_ids == fs_input_ids
 
 tokens = torch.tensor([input_ids])
 lengths = torch.tensor([len(input_ids)])
 
-# print(bart.extract_features(tokens=tokens, lengths=lengths))
-# print(fs_bart.extract_features(tokens=tokens))
+print(bart.extract_features(tokens=tokens, lengths=lengths))
+print(fs_bart.extract_features(tokens=tokens))
 
-sample_id = bart.generate(
-    src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0].view(-1).tolist()
-print(bart.decode(sample_id))
+# sample_id = bart.generate(
+#     src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0].view(-1).tolist()
+# print(bart.decode(sample_id))
 
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
