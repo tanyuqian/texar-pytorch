@@ -3,7 +3,7 @@ from torch import nn
 
 from model.bart_encoder_decoder import BART
 
-from fairseq.models.bart import BARTHubInterface
+from fairseq.models.bart import BARTHubInterface, BARTModel
 from fairseq.models.transformer import TransformerEncoder
 
 
@@ -26,23 +26,23 @@ input_ids = bart.encode(example)
 
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.cnn')
 fs_bart.eval()
+fs_input_ids = fs_bart.encode(example).tolist()
 # fs_input_ids = fs_bart.encode(
 #     'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
 # #
-# print(input_ids)
-# print(fs_input_ids)
-# assert input_ids == fs_input_ids
+print(input_ids)
+print(fs_input_ids)
+assert input_ids == fs_input_ids
 
-tokens = torch.tensor([input_ids])
-lengths = torch.tensor([len(input_ids)])
+src_tokens = torch.tensor([input_ids])
+src_lengths = torch.tensor([len(input_ids)])
+tgt_tokens = torch.tensor([[0]])
 
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-sample_id = bart.generate(src_tokens=tokens, src_lengths=lengths)[0].sample_id[0].tolist()
-print(sample_id)
-print(bart.decode(sample_id))
+print(bart(src_tokens=src_tokens, src_lengths=src_lengths, tgt_tokens=tgt_tokens))
 
-print(fs_bart.sample([example], beam=1, max_len_b=140))
+print(fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=tgt_tokens)[0])
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
