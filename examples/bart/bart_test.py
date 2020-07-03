@@ -50,8 +50,13 @@ for t in range(10):
         src_tokens=src_tokens, src_lengths=src_lengths,
         prev_output_tokens=torch.tensor([tgt_tokens]))[0]
 
-    id = torch.argmax(logits_ours[0]).item()
-    tgt_tokens.append(id)
+    id_ours = torch.argmax(logits_ours.view(-1)).item()
+    id_fs = torch.argmax(logits_fs.view(-1)).item()
+
+    print(logits_ours.shape, logits_fs.shape)
+    print('id:', id_ours, id_fs)
+
+    tgt_tokens.append(id_ours)
 
     print(f'Step {t}: {tgt_tokens}')
     print(logits_ours)
