@@ -34,9 +34,9 @@ class BARTDecoder(ModuleBase):
             positions=positions + self._pos_embedder.padding_idx + 1)
 
         if self._hparams.layernorm_embedding:
-            return self._layernorm_embedding(x)
-        else:
-            return x
+            x = self._layernorm_embedding(x)
+
+        return x
 
     @property
     def forward(self):
