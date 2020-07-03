@@ -59,8 +59,10 @@ for t in range(10):
     tgt_tokens.append(id_ours)
 
     print(f'Step {t}: {tgt_tokens}')
-    print(logits_ours)
-    print(logits_fs)
+    print(bart.decode(tgt_tokens))
+
+    if id_ours == 2:
+        break
 
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
