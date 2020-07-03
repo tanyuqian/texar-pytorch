@@ -38,7 +38,8 @@ def main():
         for sent1, sent2, target in batch:
             fs_tokens = fs_bart.encode(sent1, sent2).tolist()
             if bart.encode(sent1, sent2) != fs_tokens:
-                print(sent1, sent2)
+                print(sent1)
+                print(sent2)
                 print(bart.encode(sent1, sent2))
                 print(fs_tokens)
 
