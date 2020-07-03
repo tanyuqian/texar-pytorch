@@ -87,6 +87,8 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         self.add_module(name=f'heads.{name}', module=self.heads[name])
 
+        print(self.heads[name])
+
     @staticmethod
     def default_hparams():
         return {
