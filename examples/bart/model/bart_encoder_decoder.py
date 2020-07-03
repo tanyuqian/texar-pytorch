@@ -147,12 +147,11 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             max(src_lengths), self.encoder._hparams.max_positions)
 
         for i in range(len(src_tokens)):
-            src_tokens[i] = src_tokens[:batch_length]
+            src_tokens[i] = src_tokens[i][:batch_length]
             src_tokens[i].extend([0] * (batch_length - len(src_tokens[i])))
 
         return torch.tensor(src_tokens).to(self.device), \
                torch.tensor(src_lengths).to(self.device)
-
 
     @staticmethod
     def default_hparams():
