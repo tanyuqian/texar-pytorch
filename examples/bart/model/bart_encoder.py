@@ -20,17 +20,14 @@ class BARTEncoder(ModuleBase):
             hparams=self._hparams.transformer.todict())
 
     def forward_embedding(self, src_tokens):
-        print('Token Embedding:', self.token_embedder(src_tokens))
-        print('POS Embedding:', self.pos_embedder(src_tokens))
-
         return self.token_embedder(src_tokens) + self.pos_embedder(src_tokens)
 
     def forward(self, src_tokens, src_lengths):
-        print('ENC:', self.forward_embedding(src_tokens))
-
         encoder_outputs = self._transformer_encoder(
             inputs=self.forward_embedding(src_tokens),
             sequence_length=src_lengths)
+
+        print('ENC:', encoder_outputs)
 
         return encoder_outputs
 
