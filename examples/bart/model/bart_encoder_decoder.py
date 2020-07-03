@@ -75,17 +75,15 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         # dim_list = [self.decoder.output_size] + hidden_dims
         layer_list = []
-        for i in range(len(hidden_dims)):
+        for i in range(len(hidden_dims) + 1):
             u = hidden_dims[i - 1] if i != 0 else self.decoder.output_size
-            v = hidden_dims[i]
+            v = hidden_dims[i] if i < len(hidden_dims) else num_classes
             layer_list.extend([
-                nn.Linear(u, v), nn.Dropout(self._hparams.heads_dropout)])
+                nn.Dropout(self._hparams.heads_dropout),
+                nn.Linear(u, v),
+                nn.Tanh()])
 
-        u = hidden_dims[-1] if len(hidden_dims) > 0 \
-            else self.decoder.output_size
-        layer_list.append(nn.Linear(u, num_classes))
-
-        self.heads[name] = nn.Sequential(*layer_list)
+        self.heads[name] = nn.Sequential(*layer_list[:-1])
 
     def predict(self, head, tokens, lengths, return_logits=False):
         features = self.extract_features(tokens=tokens, lengths=lengths)
