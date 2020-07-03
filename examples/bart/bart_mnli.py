@@ -4,7 +4,7 @@ import torch
 
 from model.bart_encoder_decoder import BART
 
-BATCH_SIZE = 8
+BATCH_SIZE = 2
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
     bart.eval()
 
     batches = [[]]
-    for line in open('glue_data/MNLI/dev_matched.tsv').readlines():
+    for line in open('glue_data/MNLI/dev_matched.tsv').readlines()[1:]:
         line = line.strip().split('\t')
         sent1, sent2, target = \
             line[8].strip(), line[9].strip(), line[-1].strip()
@@ -45,7 +45,6 @@ def main():
             ).view(-1)
 
             if torch.sum(torch.abs(logits[i] - ours_logits)).item() > 1e-3:
-
                 print(sent1)
                 print(sent2)
                 print(lengths[i], tokens[i])
