@@ -41,7 +41,7 @@ tgt_tokens = [0]
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-for t in range(10):
+for t in range(1000):
     logits_ours = bart(
         src_tokens=src_tokens, src_lengths=src_lengths,
         decoder_input=torch.tensor([tgt_tokens])).logits[:, -1]
