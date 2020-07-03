@@ -73,6 +73,8 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             decoder_input=prev_output_tokens,
             features_only=True)
 
+        print('Features:', features)
+
         return features
 
     def register_classification_head(self, name, num_classes, hidden_dims):

@@ -27,8 +27,6 @@ class BARTEncoder(ModuleBase):
             inputs=self.forward_embedding(src_tokens),
             sequence_length=src_lengths)
 
-        print('ENC:', encoder_outputs)
-
         return encoder_outputs
 
     @property
