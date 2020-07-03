@@ -18,7 +18,8 @@ def main():
 
             tokens = bart.encode(sent1, sent2)
             tokens, lengths = \
-                torch.tensor([tokens]), torch.tensor([len(tokens)])
+                torch.tensor([tokens]).to('cuda'),\
+                torch.tensor([len(tokens)]).to('cuda')
             pred = bart.predict('mnli', tokens=tokens, lengths=lengths).argmax().item()
 
             pred_label = label_map[pred]
