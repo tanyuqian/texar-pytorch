@@ -96,6 +96,27 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return logits if return_logits else torch.log_softmax(logits, dim=-1)
 
+    def generate(self, src_tokens, src_lengths,
+                 beam_width=4, length_penalty=2., max_decoding_length=140):
+        encoder_output = self.encoder(
+            src_tokens=src_tokens, src_lengths=src_lengths)
+
+        start_tokens = src_tokens.new_full(
+            (src_tokens.shape[0],), self.vocab.bos_token_id)
+
+        predictions = self.decoder(
+            memory=encoder_output,
+            memory_sequence_length=src_lengths,
+            beam_width=beam_width,
+            length_penalty=length_penalty,
+            start_tokens=start_tokens,
+            end_token=self.tokenizer.eos_id,
+            max_decoding_length=max_decoding_length,
+            decoding_strategy="infer_greedy",
+        )
+
+        return predictions
+
     @staticmethod
     def default_hparams():
         return {
