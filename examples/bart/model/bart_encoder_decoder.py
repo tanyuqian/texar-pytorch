@@ -14,6 +14,8 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
     def __init__(self, pretrained_model_name='bart.large', hparams=None):
         EncoderDecoderBase.__init__(self=self, hparams=hparams)
 
+        self._device_tensor = torch.tensor([0])
+
         self.tokenizer = BARTTokenizer()
 
         vocab_size = self.tokenizer.vocab_size
@@ -98,8 +100,21 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return logits if return_logits else torch.log_softmax(logits, dim=-1)
 
+    # def sample(self, src_sentences,
+    #            beam_width=4, length_penalty=2., max_decoding_length=140):
+    #     src_tokens, src_lengths = self.make_batch(src_sentences=src_sentences)
+    #
+    #     preds = self.generate(
+    #         src_tokens=src_tokens,
+    #         src_lengths=src_lengths,
+    #         beam_width=beam_width,
+    #         length_penalty=length_penalty,
+    #         max_decoding_length=max_decoding_length)
+    #     sample_ids = preds
+    #
+
     def generate(self, src_tokens, src_lengths,
-                 beam_width=4, length_penalty=2., max_decoding_length=140):
+                 beam_width, length_penalty, max_decoding_length):
         encoder_output = self.encoder(
             src_tokens=src_tokens, src_lengths=src_lengths)
 
@@ -118,6 +133,23 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return predictions
 
+    def make_batch(self, src_sentences):
+        src_tokens = []
+        for sent in src_sentences:
+            src_tokens.append(self.encode(sent))
+        src_lengths = [len(t) for t in src_tokens]
+
+        batch_length = min(
+            max(src_lengths), self.encoder._hparams.max_positions)
+
+        for i in range(len(src_tokens)):
+            src_tokens[i] = src_tokens[:batch_length]
+            src_tokens[i].extend([0] * (batch_length - len(src_tokens[i])))
+
+        return torch.tensor(src_tokens).to(self.device), \
+               torch.tensor(src_lengths).to(self.device)
+
+
     @staticmethod
     def default_hparams():
         return {
@@ -135,3 +167,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
     @property
     def decode(self):
         return self.tokenizer.decode
+
+    @property
+    def device(self):
+        return self._device_tensor.device

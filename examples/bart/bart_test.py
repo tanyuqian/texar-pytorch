@@ -38,32 +38,41 @@ src_tokens = torch.tensor([input_ids])
 src_lengths = torch.tensor([len(input_ids)])
 tgt_tokens = [0]
 
+preds = bart.generate(
+    src_tokens=src_tokens,
+    src_lengths=src_lengths,
+    beam_width=4,
+    length_penalty=2.,
+    max_decoding_length=140)
+
+print(preds)
+
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-for t in range(1000):
-    logits_ours = bart(
-        src_tokens=src_tokens, src_lengths=src_lengths,
-        decoder_input=torch.tensor([tgt_tokens])).logits[:, -1]
-
-    logits_fs = fs_bart.model(
-        src_tokens=src_tokens, src_lengths=src_lengths,
-        prev_output_tokens=torch.tensor([tgt_tokens]))[0][:, -1]
-
-    id_ours = torch.argmax(logits_ours.view(-1)).item()
-    id_fs = torch.argmax(logits_fs.view(-1)).item()
-
-    assert id_ours == id_fs
-
-    print(logits_ours.shape, logits_fs.shape)
-    print('id:', id_ours, id_fs)
-
-    tgt_tokens.append(id_ours)
-
-    print(f'Step {t}: {tgt_tokens}')
-    print(bart.decode(tgt_tokens))
-
-    if id_ours == 2:
-        break
-
-print(fs_bart.sample([example], beam=1))
+# for t in range(1000):
+#     logits_ours = bart(
+#         src_tokens=src_tokens, src_lengths=src_lengths,
+#         decoder_input=torch.tensor([tgt_tokens])).logits[:, -1]
+#
+#     logits_fs = fs_bart.model(
+#         src_tokens=src_tokens, src_lengths=src_lengths,
+#         prev_output_tokens=torch.tensor([tgt_tokens]))[0][:, -1]
+#
+#     id_ours = torch.argmax(logits_ours.view(-1)).item()
+#     id_fs = torch.argmax(logits_fs.view(-1)).item()
+#
+#     assert id_ours == id_fs
+#
+#     print(logits_ours.shape, logits_fs.shape)
+#     print('id:', id_ours, id_fs)
+#
+#     tgt_tokens.append(id_ours)
+#
+#     print(f'Step {t}: {tgt_tokens}')
+#     print(bart.decode(tgt_tokens))
+#
+#     if id_ours == 2:
+#         break
+#
+# print(fs_bart.sample([example], beam=1))
