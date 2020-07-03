@@ -38,23 +38,38 @@ def main():
 
         for i, (sent1, sent2, target) in enumerate(batch):
             ours_tokens = bart.encode(sent1, sent2)
-            fs_tokens = fs_bart.encode(sent1, sent2).tolist()
-            if ours_tokens == fs_tokens:
-                fs_logits = fs_bart.predict(
-                    head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
-                ours_logits = bart.predict(
-                    head='mnli',
-                    tokens=torch.tensor([ours_tokens]).to('cuda'),
-                    lengths=torch.tensor([len(ours_tokens)]).to('cuda')
-                ).view(-1)
+            ours_logits = bart.predict(
+                head='mnli',
+                tokens=torch.tensor([ours_tokens]).to('cuda'),
+                lengths=torch.tensor([len(ours_tokens)]).to('cuda')
+            ).view(-1)
 
-                if torch.sum(torch.abs(fs_logits - ours_logits)).item() > 1e-5:
-                    print(sent1)
-                    print(sent2)
-                    print(fs_logits)
-                    print(ours_logits)
-                    print(logits[i])
-                    exit()
+            if torch.sum(torch.abs(logits[i] - ours_logits)).item() > 1e-3:
+                print(sent1)
+                print(sent2)
+                print(ours_logits)
+                print(logits[i])
+                exit()
+
+        # for i, (sent1, sent2, target) in enumerate(batch):
+            # ours_tokens = bart.encode(sent1, sent2)
+            # fs_tokens = fs_bart.encode(sent1, sent2).tolist()
+            # if ours_tokens == fs_tokens:
+            #     fs_logits = fs_bart.predict(
+            #         head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
+            #     ours_logits = bart.predict(
+            #         head='mnli',
+            #         tokens=torch.tensor([ours_tokens]).to('cuda'),
+            #         lengths=torch.tensor([len(ours_tokens)]).to('cuda')
+            #     ).view(-1)
+            #
+            #     if torch.sum(torch.abs(fs_logits - ours_logits)).item() > 1e-3:
+            #         print(sent1)
+            #         print(sent2)
+            #         print(fs_logits)
+            #         print(ours_logits)
+            #         print(logits[i])
+            #         exit()
 
         n_correct += sum([1 for i in range(len(batch))
                           if label_map[preds[i]] == batch[i][-1]])
