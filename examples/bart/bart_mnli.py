@@ -36,13 +36,14 @@ def main():
         logits = bart.predict(head='mnli', tokens=tokens, lengths=lengths)
         preds = torch.argmax(logits, dim=-1).tolist()
 
-        for sent1, sent2, target in batch:
+        for i, (sent1, sent2, target) in enumerate(batch):
             fs_tokens = fs_bart.encode(sent1, sent2).tolist()
-            if bart.encode(sent1, sent2) != fs_tokens:
-                print(sent1)
-                print(sent2)
-                print(bart.encode(sent1, sent2))
-                print(fs_tokens)
+            if bart.encode(sent1, sent2) == fs_tokens:
+                fs_logits = fs_bart.predict(
+                    head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
+                if fs_logits != logits[i]:
+                    print(fs_logits)
+                    print(logits[i])
 
         n_correct += sum([1 for i in range(len(batch))
                           if label_map[preds[i]] == batch[i][-1]])
