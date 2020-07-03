@@ -4,7 +4,7 @@ from model.bart_encoder_decoder import BART
 
 
 def main():
-    bart = BART(pretrained_model_name='bart.large.cnn').to('cuda')
+    bart = BART(pretrained_model_name='bart.large.mnli').to('cuda')
     bart.eval()
 
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
