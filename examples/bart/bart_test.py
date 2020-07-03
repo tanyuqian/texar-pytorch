@@ -41,7 +41,7 @@ tgt_tokens = torch.tensor([[0]])
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-print(bart(src_tokens=src_tokens, src_lengths=src_lengths, tgt_tokens=tgt_tokens))
+print(bart(src_tokens=src_tokens, src_lengths=src_lengths, decoder_input=tgt_tokens))
 
 print(fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=tgt_tokens)[0])
 
