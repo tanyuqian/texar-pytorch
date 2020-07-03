@@ -41,11 +41,21 @@ class BARTTokenizer:
         gpt2_ids = []
         if token_ids[0] == self._bos_id:
             token_ids = token_ids[1:]
+        while len(token_ids) > 0 and token_ids[-1] in [
+            self.bos_id, self.eos_id, self.pad_id]:
+            token_ids = token_ids[:-1]
+        token_ids = token_ids + [self.eos_id]
+
+        sentences = []
         for t in token_ids:
             if t != self._eos_id:
                 gpt2_ids.append(int(self._bart_to_gpt2[t]))
+            else:
+                sentences.append(self._gpt2_tokenizer.map_id_to_text(
+                    token_ids=gpt2_ids))
+                gpt2_ids = []
 
-        return self._gpt2_tokenizer.map_id_to_text(token_ids=gpt2_ids)
+        return sentences
 
     @property
     def pad_id(self):
