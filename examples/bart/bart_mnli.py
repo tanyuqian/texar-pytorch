@@ -30,11 +30,11 @@ def main():
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
     n_correct, n_sample = 0, 0
     for batch in tqdm(batches, desc='Testing'):
-        tokens = [bart.encode(sent1, sent2) for sent1, sent2, target in batch]
-        tokens, lengths = bart.make_batch(tokens)
-
-        logits = bart.predict(head='mnli', tokens=tokens, lengths=lengths)
-        preds = torch.argmax(logits, dim=-1).tolist()
+        # tokens = [bart.encode(sent1, sent2) for sent1, sent2, target in batch]
+        # tokens, lengths = bart.make_batch(tokens)
+        #
+        # logits = bart.predict(head='mnli', tokens=tokens, lengths=lengths)
+        # preds = torch.argmax(logits, dim=-1).tolist()
 
         for i, (sent1, sent2, target) in enumerate(batch):
             ours_tokens = bart.encode(sent1, sent2)
@@ -53,7 +53,6 @@ def main():
             if torch.sum(torch.abs(ours_logits1 - ours_logits)).item() > 1e-3:
                 print(sent1)
                 print(sent2)
-                print(lengths[i], tokens[i])
                 print(len(ours_tokens), ours_tokens)
                 print(ours_logits)
                 print(ours_logits1)
@@ -79,11 +78,11 @@ def main():
             #         print(logits[i])
             #         exit()
 
-        n_correct += sum([1 for i in range(len(batch))
-                          if label_map[preds[i]] == batch[i][-1]])
-        n_sample += len(batch)
-
-        print('| Accuracy: ', float(n_correct) / float(n_sample))
+        # n_correct += sum([1 for i in range(len(batch))
+        #                   if label_map[preds[i]] == batch[i][-1]])
+        # n_sample += len(batch)
+        #
+        # print('| Accuracy: ', float(n_correct) / float(n_sample))
 
 
 if __name__ == '__main__':
