@@ -178,7 +178,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
     @property
     def device(self):
-        return self._device_tensor.device
+        return self._device_param.device
 
     @property
     def output_size(self):
