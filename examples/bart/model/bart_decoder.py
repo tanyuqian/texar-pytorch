@@ -36,6 +36,8 @@ class BARTDecoder(ModuleBase):
         if self._hparams.layernorm_embedding:
             x = self._layernorm_embedding(x)
 
+        print('DEC:', x)
+
         return x
 
     @property
