@@ -17,7 +17,8 @@ def main():
     batches = [[]]
     for line in open('glue_data/MNLI/dev_matched.tsv').readlines():
         line = line.strip().split('\t')
-        sent1, sent2, target = line[8], line[9], line[-1]
+        sent1, sent2, target = \
+            line[8].strip(), line[9].strip(), line[-1].strip()
 
         batches[-1].append([sent1, sent2, target])
         if len(batches[-1]) == BATCH_SIZE:
