@@ -47,10 +47,12 @@ def main():
                     tokens=torch.tensor([ours_tokens]).to('cuda'),
                     lengths=torch.tensor([len(ours_tokens)]).to('cuda')
                 ).view(-1)
-                if torch.sum(torch.abs(fs_logits - logits[i])).item() > 1e-5:
+
+                if torch.sum(torch.abs(fs_logits - ours_tokens)).item() > 1e-5:
                     print(sent1)
                     print(sent2)
                     print(fs_logits)
+                    print(ours_logits)
                     print(logits[i])
                     exit()
 
