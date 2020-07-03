@@ -102,7 +102,11 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
     def sample(self, src_sentences,
                beam_width=4, length_penalty=2., max_decoding_length=140):
-        src_tokens, src_lengths = self.make_batch(src_sentences=src_sentences)
+        src_tokens = []
+        for sent in src_sentences:
+            src_tokens.append(self.encode(sent))
+
+        src_tokens, src_lengths = self.make_batch(src_tokens=src_tokens)
 
         preds = self.generate(
             src_tokens=src_tokens,
@@ -140,10 +144,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return predictions
 
-    def make_batch(self, src_sentences):
-        src_tokens = []
-        for sent in src_sentences:
-            src_tokens.append(self.encode(sent))
+    def make_batch(self, src_tokens):
         src_lengths = [len(t) for t in src_tokens]
 
         batch_length = min(
