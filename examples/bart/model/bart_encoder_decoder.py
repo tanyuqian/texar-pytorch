@@ -94,7 +94,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             self.tokenizer.eos_id), :].view(
             features.size(0), -1, features.size(-1))[:, -1, :]
 
-        logits = self.classification_heads[head](sentence_representation)
+        logits = self.heads[head](sentence_representation)
 
         return logits if return_logits else torch.log_softmax(logits, dim=-1)
 
