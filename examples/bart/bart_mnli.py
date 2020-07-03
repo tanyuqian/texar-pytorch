@@ -20,6 +20,9 @@ def main():
         if len(batches[-1]) == BATCH_SIZE:
             batches.append([])
 
+    if batches[-1] == []:
+        batches = batches[:-1]
+
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
     n_correct, n_sample = 0, 0
     for batch in tqdm(batches, desc='Testing'):
