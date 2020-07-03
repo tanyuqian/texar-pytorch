@@ -4,7 +4,7 @@ import torch
 
 from model.bart_encoder_decoder import BART
 
-BATCH_SIZE = 2
+BATCH_SIZE = 1
 
 
 def main():
@@ -30,7 +30,7 @@ def main():
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
     n_correct, n_sample = 0, 0
     for batch in tqdm(batches, desc='Testing'):
-        tokens = [bart.encode(sent1, sent2) for sent1, sent2, target in batch]
+        tokens = [bart.encode(sent1, sent2) + [0] for sent1, sent2, target in batch]
         tokens, lengths = bart.make_batch(tokens)
 
         logits = bart.predict(head='mnli', tokens=tokens, lengths=lengths)
