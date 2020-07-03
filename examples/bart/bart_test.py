@@ -53,6 +53,8 @@ for t in range(1000):
     id_ours = torch.argmax(logits_ours.view(-1)).item()
     id_fs = torch.argmax(logits_fs.view(-1)).item()
 
+    assert id_ours == id_fs
+
     print(logits_ours.shape, logits_fs.shape)
     print('id:', id_ours, id_fs)
 
