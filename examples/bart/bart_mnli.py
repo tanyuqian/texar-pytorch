@@ -41,7 +41,7 @@ def main():
             if bart.encode(sent1, sent2) == fs_tokens:
                 fs_logits = fs_bart.predict(
                     head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
-                if fs_logits != logits[i]:
+                if fs_logits.tolist() != logits[i].tolist():
                     print(fs_logits)
                     print(logits[i])
 
