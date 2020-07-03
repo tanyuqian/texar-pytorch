@@ -44,11 +44,11 @@ tgt_tokens = [0]
 for t in range(10):
     logits_ours = bart(
         src_tokens=src_tokens, src_lengths=src_lengths,
-        decoder_input=torch.tensor([tgt_tokens])).logits
+        decoder_input=torch.tensor([tgt_tokens])).logits[:, -1]
 
     logits_fs = fs_bart.model(
         src_tokens=src_tokens, src_lengths=src_lengths,
-        prev_output_tokens=torch.tensor([tgt_tokens]))[0]
+        prev_output_tokens=torch.tensor([tgt_tokens]))[0][:, -1]
 
     id_ours = torch.argmax(logits_ours.view(-1)).item()
     id_fs = torch.argmax(logits_fs.view(-1)).item()
