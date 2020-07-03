@@ -36,6 +36,9 @@ lengths = torch.tensor([len(input_ids)])
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-print(bart.generate(src_tokens=tokens, src_lengths=lengths))
+sample_id = bart.generate(
+    src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0]
+print(bart.decode(sample_id))
+
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
