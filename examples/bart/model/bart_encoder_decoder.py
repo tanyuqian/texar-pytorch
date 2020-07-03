@@ -76,7 +76,6 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
         if name in self.heads:
             raise ValueError(f'head named {name} is already registered.')
 
-        # dim_list = [self.decoder.output_size] + hidden_dims
         layer_list = []
         for i in range(len(hidden_dims) + 1):
             u = hidden_dims[i - 1] if i != 0 else self.decoder.output_size
@@ -100,7 +99,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
         return logits if return_logits else torch.log_softmax(logits, dim=-1)
 
     def generate(self, src_tokens, src_lengths,
-                 beam_width=1, max_decoding_length=140):
+                 beam_width=4, length_penalty=2., max_decoding_length=140):
         encoder_output = self.encoder(
             src_tokens=src_tokens, src_lengths=src_lengths)
 
@@ -111,11 +110,11 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             memory=encoder_output,
             memory_sequence_length=src_lengths,
             beam_width=beam_width,
+            length_penalty=length_penalty,
             start_tokens=start_tokens,
             end_token=self.tokenizer.eos_id,
             max_decoding_length=max_decoding_length,
-            decoding_strategy="infer_greedy",
-        )
+            decoding_strategy="infer_greedy")
 
         return predictions
 

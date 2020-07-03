@@ -66,5 +66,4 @@ for t in range(1000):
     if id_ours == 2:
         break
 
-
 print(fs_bart.sample([example], beam=1))
