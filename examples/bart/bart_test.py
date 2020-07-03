@@ -13,7 +13,7 @@ Texar provides a library of easy-to-use ML modules and functionalities for
 composing whatever models and algorithms. The tool is designed for both
 researchers and practitioners for fast prototyping and experimentation.'''
 
-bart = BART()
+bart = BART(pretrained_model_name='bart.large.mnli')
 bart.eval()
 input_ids = bart.encode(example)
 
