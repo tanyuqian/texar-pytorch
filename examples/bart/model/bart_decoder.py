@@ -14,7 +14,8 @@ class BARTDecoder(ModuleBase):
         self._token_embedder = token_embedder
         self._pos_embedder = LearnedPositionalEmbedding(
             num_embeddings=self._hparams.max_positions + pad_id + 1,
-            embedding_dim=token_embedder.dim)
+            embedding_dim=token_embedder.dim,
+            padding_idx=pad_id)
 
         if self._hparams.layernorm_embedding:
             self._layernorm_embedding = nn.LayerNorm(
