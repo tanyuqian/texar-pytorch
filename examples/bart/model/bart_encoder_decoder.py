@@ -14,7 +14,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
     def __init__(self, pretrained_model_name='bart.large', hparams=None):
         EncoderDecoderBase.__init__(self=self, hparams=hparams)
 
-        self._device_tensor = torch.tensor([0])
+        self._device_tensor = torch.tensor([0], requires_grad=True)
 
         self.tokenizer = BARTTokenizer()
 
