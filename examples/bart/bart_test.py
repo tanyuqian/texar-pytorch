@@ -41,6 +41,7 @@ lengths = torch.tensor([len(input_ids)])
 
 sample_id = bart.generate(
     src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0].view(-1).tolist()
+print(sample_id)
 print(bart.decode(sample_id))
 
 
