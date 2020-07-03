@@ -37,7 +37,7 @@ lengths = torch.tensor([len(input_ids)])
 # print(fs_bart.extract_features(tokens=tokens))
 
 sample_id = bart.generate(
-    src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0]
+    src_tokens=tokens, src_lengths=lengths)['sample_id'][:, :, 0].view(-1).tolist()
 print(bart.decode(sample_id))
 
 
