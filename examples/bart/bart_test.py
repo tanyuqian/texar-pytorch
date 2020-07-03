@@ -44,6 +44,6 @@ lengths = torch.tensor([len(input_ids)])
 # print(sample_id)
 # print(bart.decode(sample_id))
 
-print(fs_bart.sample(example, beam=4, lenpen=2.0, max_len_b=140))
+print(fs_bart.sample([example], beam=4, lenpen=2.0, max_len_b=140))
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
