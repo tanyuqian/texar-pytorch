@@ -56,7 +56,7 @@ def main():
                 print(lengths[i], tokens[i])
                 print(len(ours_tokens), ours_tokens)
                 print(ours_logits)
-                print(logits[i])
+                print(ours_logits1)
                 exit()
 
         # for i, (sent1, sent2, target) in enumerate(batch):
