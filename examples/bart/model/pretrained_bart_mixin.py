@@ -47,13 +47,13 @@ class PretrainedBARTMixin(PretrainedMixin):
                 'decoder.layernorm_embedding.bias',
         }
         if 'mnli' in pretrained_model_name:
-            no_cond_map['head.mnli.0.weight'] = \
+            no_cond_map['heads.mnli.0.weight'] = \
                 'classification_heads.mnli.dense.weight'
-            no_cond_map['head.mnli.0.bias'] = \
+            no_cond_map['heads.mnli.0.bias'] = \
                 'classification_heads.mnli.dense.bias'
-            no_cond_map['head.mnli.2.weight'] = \
+            no_cond_map['heads.mnli.2.weight'] = \
                 'classification_heads.mnli.out_proj.weight'
-            no_cond_map['head.mnli.2.bias'] = \
+            no_cond_map['heads.mnli.2.bias'] = \
                 'classification_heads.mnli.out_proj.bias'
 
         layer_c_map = {
