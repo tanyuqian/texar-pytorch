@@ -30,7 +30,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             token_embedder=self.token_embedder,
             hparams=self._hparams.decoder)
 
-        self.heads = {}
+        self.heads = nn.ModuleDict()
         if 'mnli' in pretrained_model_name:
             self.register_classification_head(
                 name='mnli', num_classes=3, hidden_dims=[1024])
@@ -74,18 +74,18 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             raise ValueError(f'head named {name} is already registered.')
 
         # dim_list = [self.decoder.output_size] + hidden_dims
-        self.heads[name] = nn.ModuleList()
+        layer_list = []
         for i in range(len(hidden_dims)):
             u = hidden_dims[i - 1] if i != 0 else self.decoder.output_size
             v = hidden_dims[i]
-            self.heads[name].extend([
+            layer_list.extend([
                 nn.Linear(u, v), nn.Dropout(self._hparams.heads_dropout)])
 
         u = hidden_dims[-1] if len(hidden_dims) > 0 \
             else self.decoder.output_size
-        self.heads[name].append(nn.Linear(u, num_classes))
+        layer_list.append(nn.Linear(u, num_classes))
 
-        self.add_module(name=f'head_{name}', module=self.heads[name])
+        self.heads[name] = nn.Sequential(*layer_list)
 
     def predict(self, head, tokens, lengths, return_logits=False):
         features = self.extract_features(tokens=tokens, lengths=lengths)

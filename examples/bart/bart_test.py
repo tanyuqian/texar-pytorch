@@ -18,6 +18,10 @@ bart.eval()
 input_ids = bart.encode(
     'BART is a sequence model.', 'BART is not sequence to sequence.')
 
+for name, param in bart.named_parameters():
+    print(name, param.shape)
+exit()
+
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli')
 fs_bart.eval()
 fs_input_ids = fs_bart.encode(
