@@ -16,7 +16,7 @@ researchers and practitioners for fast prototyping and experimentation.'''
 bart = BART(pretrained_model_name='bart.large.mnli')
 bart.eval()
 input_ids = bart.encode(
-    'BART is a seq2seq model.', 'BART is not sequence to sequence.')
+    'BART is a sequence model.', 'BART is not sequence to sequence.')
 
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli')
 fs_bart.eval()
