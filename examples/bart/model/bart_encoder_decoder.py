@@ -85,7 +85,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             else self.decoder.output_size
         self.heads[name].append(nn.Linear(u, num_classes))
 
-        self.add_module(name=f'heads.{name}', module=self.heads[name])
+        self.add_module(name=f'heads_{name}', module=self.heads[name])
 
         print(self.heads[name])
 
