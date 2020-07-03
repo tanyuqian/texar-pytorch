@@ -39,7 +39,7 @@ lengths = torch.tensor([len(input_ids)])
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-sample_id = bart.generate(src_tokens=tokens, src_lengths=lengths)[0].sample_id
+sample_id = bart.generate(src_tokens=tokens, src_lengths=lengths)[0].sample_id[0].tolist()
 print(sample_id)
 print(bart.decode(sample_id))
 
