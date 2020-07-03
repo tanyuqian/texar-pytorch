@@ -21,7 +21,7 @@ input_ids = bart.encode(
 fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli')
 fs_bart.eval()
 fs_input_ids = fs_bart.encode(
-    'BART is a seq2seq model.', 'BART is not sequence to sequence.').tolist()
+    'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
 
 print(input_ids)
 print(fs_input_ids)
