@@ -112,7 +112,10 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
             max_decoding_length=max_decoding_length)
         sample_ids = preds['sample_id'][:, :, 0]
 
-        tgt_sents = [self.decode(sample_ids[i:, :].tolist())
+        for i in range(len(src_sentences)):
+            print(sample_ids[i].tolist())
+
+        tgt_sents = [self.decode(sample_ids[i].tolist())
                      for i in range(len(src_sentences))]
 
         return tgt_sents
@@ -174,3 +177,7 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
     @property
     def device(self):
         return self._device_tensor.device
+
+    @property
+    def output_size(self):
+        return self.decoder.output_size
