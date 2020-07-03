@@ -37,10 +37,16 @@ def main():
         preds = torch.argmax(logits, dim=-1).tolist()
 
         for i, (sent1, sent2, target) in enumerate(batch):
+            ours_tokens = bart.encode(sent1, sent2)
             fs_tokens = fs_bart.encode(sent1, sent2).tolist()
-            if bart.encode(sent1, sent2) == fs_tokens:
+            if ours_tokens == fs_tokens:
                 fs_logits = fs_bart.predict(
                     head='mnli', tokens=torch.tensor([fs_tokens])).view(-1)
+                ours_logits = bart.predict(
+                    head='mnli',
+                    tokens=torch.tensor([ours_tokens]).to('cuda'),
+                    lengths=torch.tensor([len(ours_tokens)]).to('cuda')
+                ).view(-1)
                 if torch.sum(torch.abs(fs_logits - logits[i])).item() > 1e-5:
                     print(sent1)
                     print(sent2)
