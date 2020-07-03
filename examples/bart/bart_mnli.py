@@ -30,7 +30,7 @@ def main():
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
     n_correct, n_sample = 0, 0
     for batch in tqdm(batches, desc='Testing'):
-        tokens = [bart.encode(sent1, sent2) + [0] for sent1, sent2, target in batch]
+        tokens = [bart.encode(sent1, sent2) for sent1, sent2, target in batch]
         tokens, lengths = bart.make_batch(tokens)
 
         logits = bart.predict(head='mnli', tokens=tokens, lengths=lengths)
@@ -44,7 +44,13 @@ def main():
                 lengths=torch.tensor([len(ours_tokens)]).to('cuda')
             ).view(-1)
 
-            if torch.sum(torch.abs(logits[i] - ours_logits)).item() > 1e-3:
+            ours_logits1 = bart.predict(
+                head='mnli',
+                tokens=torch.tensor([ours_tokens + [0]]).to('cuda'),
+                lengths=torch.tensor([len(ours_tokens)]).to('cuda')
+            ).view(-1)
+
+            if torch.sum(torch.abs(ours_logits1 - ours_logits)).item() > 1e-3:
                 print(sent1)
                 print(sent2)
                 print(lengths[i], tokens[i])
