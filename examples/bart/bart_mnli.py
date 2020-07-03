@@ -45,8 +45,11 @@ def main():
             ).view(-1)
 
             if torch.sum(torch.abs(logits[i] - ours_logits)).item() > 1e-3:
+
                 print(sent1)
                 print(sent2)
+                print(lengths[i], tokens[i])
+                print(len(ours_tokens), ours_tokens)
                 print(ours_logits)
                 print(logits[i])
                 exit()
