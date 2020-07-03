@@ -67,4 +67,4 @@ for t in range(1000):
         break
 
 
-# print(fs_bart.predict(head='mnli', tokens=tokens))
+print(fs_bart.sample([example], beam=1))
