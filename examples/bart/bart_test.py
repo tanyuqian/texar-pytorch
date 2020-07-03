@@ -30,22 +30,22 @@ fs_input_ids = fs_bart.encode(example).tolist()
 # fs_input_ids = fs_bart.encode(
 #     'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
 # #
-print(input_ids)
-print(fs_input_ids)
 assert input_ids == fs_input_ids
 
-src_tokens = torch.tensor([input_ids])
-src_lengths = torch.tensor([len(input_ids)])
-tgt_tokens = [0]
+# src_tokens = torch.tensor([input_ids])
+# src_lengths = torch.tensor([len(input_ids)])
+# tgt_tokens = [0]
 
-preds = bart.generate(
-    src_tokens=src_tokens,
-    src_lengths=src_lengths,
-    beam_width=4,
-    length_penalty=2.,
-    max_decoding_length=140)
+print(bart.sample([example, example]))
 
-print(preds)
+# preds = bart.generate(
+#     src_tokens=src_tokens,
+#     src_lengths=src_lengths,
+#     beam_width=4,
+#     length_penalty=2.,
+#     max_decoding_length=140)
+#
+# print(preds)
 
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))

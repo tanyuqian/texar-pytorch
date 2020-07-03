@@ -100,18 +100,22 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
 
         return logits if return_logits else torch.log_softmax(logits, dim=-1)
 
-    # def sample(self, src_sentences,
-    #            beam_width=4, length_penalty=2., max_decoding_length=140):
-    #     src_tokens, src_lengths = self.make_batch(src_sentences=src_sentences)
-    #
-    #     preds = self.generate(
-    #         src_tokens=src_tokens,
-    #         src_lengths=src_lengths,
-    #         beam_width=beam_width,
-    #         length_penalty=length_penalty,
-    #         max_decoding_length=max_decoding_length)
-    #     sample_ids = preds
-    #
+    def sample(self, src_sentences,
+               beam_width=4, length_penalty=2., max_decoding_length=140):
+        src_tokens, src_lengths = self.make_batch(src_sentences=src_sentences)
+
+        preds = self.generate(
+            src_tokens=src_tokens,
+            src_lengths=src_lengths,
+            beam_width=beam_width,
+            length_penalty=length_penalty,
+            max_decoding_length=max_decoding_length)
+        sample_ids = preds['sample_ids'][:, :, 0]
+
+        tgt_sents = [self.decode(sample_ids[i:, :].tolist())
+                     for i in range(len(src_sentences))]
+
+        return tgt_sents
 
     def generate(self, src_tokens, src_lengths,
                  beam_width, length_penalty, max_decoding_length):
