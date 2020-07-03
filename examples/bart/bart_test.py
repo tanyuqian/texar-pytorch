@@ -36,13 +36,25 @@ assert input_ids == fs_input_ids
 
 src_tokens = torch.tensor([input_ids])
 src_lengths = torch.tensor([len(input_ids)])
-tgt_tokens = torch.tensor([[0]])
+tgt_tokens = [0]
 
 # print(bart.extract_features(tokens=tokens, lengths=lengths))
 # print(fs_bart.extract_features(tokens=tokens))
 
-print(bart(src_tokens=src_tokens, src_lengths=src_lengths, decoder_input=tgt_tokens))
+for t in range(10):
+    logits_ours = bart(
+        src_tokens=src_tokens, src_lengths=src_lengths,
+        decoder_input=torch.tensor([tgt_tokens]))
 
-print(fs_bart.model(src_tokens=src_tokens, src_lengths=src_lengths, prev_output_tokens=tgt_tokens)[0])
+    logits_fs = fs_bart.model(
+        src_tokens=src_tokens, src_lengths=src_lengths,
+        prev_output_tokens=torch.tensor([tgt_tokens]))[0]
+
+    print(f'Step {t}')
+    print(logits_ours)
+    print(logits_fs)
+
+    id = torch.argmax(logits_ours[0]).item()
+    tgt_tokens.append(id)
 
 # print(fs_bart.predict(head='mnli', tokens=tokens))
