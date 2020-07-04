@@ -2,7 +2,7 @@ from tqdm import trange
 
 from model.bart_encoder_decoder import BART
 
-BATCH_SIZE = 10
+BATCH_SIZE = 4
 
 
 def main():
