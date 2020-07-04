@@ -4,7 +4,7 @@ import torch
 
 from model.bart_encoder_decoder import BART
 
-BATCH_SIZE = 8
+BATCH_SIZE = 5
 
 
 def main():
