@@ -20,7 +20,7 @@ input_ids = bart.encode(example)[:1024]
 #     print(name, param.shape)
 # exit()
 
-fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.cnn').to('cuda')
+fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.cnn').to('cuda:1')
 fs_bart.eval()
 # fs_input_ids = fs_bart.encode(example).tolist()
 # fs_input_ids = fs_bart.encode(
@@ -28,8 +28,8 @@ fs_bart.eval()
 # #
 # assert input_ids == fs_input_ids
 
-src_tokens = torch.tensor([input_ids]).to('cuda')
-src_lengths = torch.tensor([len(input_ids)]).to('cuda')
+src_tokens = torch.tensor([input_ids])
+src_lengths = torch.tensor([len(input_ids)])
 tgt_tokens = [0]
 
 # print(bart.sample([example, example]))
@@ -48,15 +48,15 @@ tgt_tokens = [0]
 
 for t in range(1000):
     logits_ours = bart(
-        src_tokens=src_tokens, src_lengths=src_lengths,
+        src_tokens=src_tokens.to('cuda'), src_lengths=src_lengths.to('cuda'),
         decoder_input=torch.tensor([tgt_tokens]).to('cuda')).logits[:, -1]
 
     logits_fs = fs_bart.model(
-        src_tokens=src_tokens, src_lengths=src_lengths,
-        prev_output_tokens=torch.tensor([tgt_tokens]).to('cuda'))[0][:, -1]
+        src_tokens=src_tokens.to('cuda:1'), src_lengths=src_lengths.to('cuda:1'),
+        prev_output_tokens=torch.tensor([tgt_tokens]).to('cuda:1'))[0][:, -1]
 
-    id_ours = torch.argmax(logits_ours.view(-1)[:10]).item() + 10
-    id_fs = torch.argmax(logits_fs.view(-1)[:10]).item() + 10
+    id_ours = torch.argmax(logits_ours.view(-1)).item()
+    id_fs = torch.argmax(logits_fs.view(-1)).item()
 
     assert id_ours == id_fs
 
