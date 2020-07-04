@@ -26,7 +26,7 @@ def main():
 
     label_map = {0: 'contradiction', 1: 'neutral', 2: 'entailment'}
     n_correct, n_sample = 0, 0
-    for batch in tqdm(batches, desc='Testing'):
+    for batch in tqdm(batches, desc='Testing MNLI'):
         tokens = [bart.encode(sent1, sent2) for sent1, sent2, target in batch]
         tokens, lengths = bart.make_batch(tokens)
 
