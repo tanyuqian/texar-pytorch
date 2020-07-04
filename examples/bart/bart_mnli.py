@@ -8,9 +8,6 @@ BATCH_SIZE = 8
 
 
 def main():
-    fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.mnli').to('cuda')
-    fs_bart.eval()
-
     bart = BART(pretrained_model_name='bart.large.mnli').to('cuda')
     bart.eval()
 
