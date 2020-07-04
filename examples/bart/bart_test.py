@@ -22,8 +22,8 @@ input_ids = bart.encode(example)[:1024]
 #     print(name, param.shape)
 # exit()
 
-fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.cnn').to('cuda')
-fs_bart.eval()
+# fs_bart = torch.hub.load('pytorch/fairseq', 'bart.large.cnn').to('cuda')
+# fs_bart.eval()
 # fs_input_ids = fs_bart.encode(example).tolist()
 # fs_input_ids = fs_bart.encode(
 #     'BART is a sequence model.', 'BART is not sequence to sequence.').tolist()
@@ -53,14 +53,14 @@ for t in range(1000):
         src_tokens=src_tokens, src_lengths=src_lengths,
         decoder_input=torch.tensor([tgt_tokens]).to('cuda')).logits[:, -1]
 
-    logits_fs = fs_bart.model(
-        src_tokens=src_tokens, src_lengths=src_lengths,
-        prev_output_tokens=torch.tensor([tgt_tokens]).to('cuda'))[0][:, -1]
+    # logits_fs = fs_bart.model(
+    #     src_tokens=src_tokens, src_lengths=src_lengths,
+    #     prev_output_tokens=torch.tensor([tgt_tokens]).to('cuda'))[0][:, -1]
 
     id_ours = torch.argmax(logits_ours.view(-1)).item()
-    id_fs = torch.argmax(logits_fs.view(-1)).item()
+    # id_fs = torch.argmax(logits_fs.view(-1)).item()
 
-    assert id_ours == id_fs
+    # assert id_ours == id_fs
 
     # print(logits_ours.shape, logits_fs.shape)
     # print('id:', id_ours, id_fs)
