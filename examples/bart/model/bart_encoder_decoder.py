@@ -146,7 +146,8 @@ class BART(EncoderDecoderBase, PretrainedBARTMixin):
         return predictions
 
     def make_batch(self, src_tokens):
-        src_lengths = [len(t) for t in src_tokens]
+        src_lengths = [min(
+            self.encoder._hparams.max_positions, len(t)) for t in src_tokens]
 
         batch_length = min(
             max(src_lengths), self.encoder._hparams.max_positions)
