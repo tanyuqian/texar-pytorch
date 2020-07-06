@@ -2,7 +2,7 @@ from tqdm import trange
 
 from model.bart_encoder_decoder import BART
 
-BATCH_SIZE = 4
+BATCH_SIZE = 1
 
 
 def main():
@@ -15,7 +15,11 @@ def main():
     src_sents = [line.strip() for line in test_src_file.readlines()]
 
     for i in trange(0, len(src_sents), BATCH_SIZE, desc='Testing CNN/DM'):
-        hypos = bart.sample(src_sents[i: i + BATCH_SIZE])
+        hypos = bart.sample(
+            src_sents[i: i + BATCH_SIZE],
+            beam_width=2,
+            length_penalty=2.,
+            max_decoding_length=140)
 
         for hypo in hypos:
             print(hypo, file=test_hypo_file)
