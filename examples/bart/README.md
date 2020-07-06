@@ -1,6 +1,6 @@
 ## BART
 
-### MNLI
+### Task: MNLI
 
 #### Download Data
 ```bash
@@ -13,7 +13,7 @@ python bart_mnli.py
 ```
 
 
-### CNN/DM
+### Task: CNN/DM
 #### Download Data
 ```bash
 bash data/download_cnn.sh
