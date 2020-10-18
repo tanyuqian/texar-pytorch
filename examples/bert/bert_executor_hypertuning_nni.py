@@ -20,8 +20,9 @@ import functools
 import importlib
 import os
 import sys
+import tempfile
 from pathlib import Path
-from typing import Any, Dict, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 import torch
 from torch import nn
@@ -29,6 +30,7 @@ from torch.nn import functional as F
 
 import texar.torch as tx
 from texar.torch.run import *
+import nni
 
 from utils import model_utils
 
@@ -47,14 +49,16 @@ parser.add_argument(
     help="The output directory where the model checkpoints will be written.")
 parser.add_argument(
     "--checkpoint", type=str, default=None,
-    help="Path to a model checkpoint (including bert modules) to restore from.")
+    help="Path to a model checdkpoint (including bert modules) \
+    to restore from.")
 parser.add_argument(
-    "--do-train", action="store_true", help="Whether to run training.")
+    "--do-train", action="store_true", default=True,
+    help="Whether to run training.")
 parser.add_argument(
-    "--do-eval", action="store_true",
+    "--do-eval", action="store_true", default=True,
     help="Whether to run eval on the dev set.")
 parser.add_argument(
-    "--do-test", action="store_true",
+    "--do-test", action="store_true", default=True,
     help="Whether to run test on the test set.")
 args = parser.parse_args()
 
@@ -65,6 +69,7 @@ config_downstream = {
     if not k.startswith('__') and k != "hyperparams"}
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+tuner_params = nni.get_next_parameter()
 
 
 class ModelWrapper(nn.Module):
@@ -98,6 +103,18 @@ class ModelWrapper(nn.Module):
         return {"preds": preds}
 
 
+class FileWriterMetric(metric.SimpleMetric[List[int], float]):
+    def __init__(self, file_path: Optional[Union[str, Path]] = None):
+        super().__init__(pred_name="preds", label_name="input_ids")
+        self.file_path = file_path
+
+    def _value(self) -> float:
+        path = self.file_path or tempfile.mktemp()
+        with open(path, "w+") as writer:
+            writer.write("\n".join(str(p) for p in self.predicted))
+        return 1.0
+
+
 def main() -> None:
     """
     Builds the model and runs.
@@ -115,10 +132,10 @@ def main() -> None:
 
     num_train_steps = int(num_train_data / config_data.train_batch_size *
                           config_data.max_train_epoch)
-    num_warmup_steps = int(num_train_steps * config_data.warmup_proportion)
+    num_warmup_steps = tuner_params['warmup_steps']
 
     # Builds learning rate decay scheduler
-    static_lr = 2e-5
+    static_lr = tuner_params['static_lr']
 
     vars_with_decay = []
     vars_without_decay = []
@@ -154,8 +171,8 @@ def main() -> None:
         max_tokens=config_data.max_batch_tokens)
 
     output_dir = Path(args.output_dir)
-    test_output_path = output_dir / "test.output"
-
+    valid_metric = metric.Accuracy[float](
+        pred_name="preds", label_name="label_ids")
     executor = Executor(
         # supply executor with the model
         model=model,
@@ -165,7 +182,6 @@ def main() -> None:
         test_data=test_dataset,
         batching_strategy=batching_strategy,
         device=device,
-        # tbx logging
         tbx_logging_dir=os.path.join(config_data.tbx_log_dir,
                                      "exp" + str(config_data.exp_number)),
         tbx_log_every=cond.iteration(config_data.tbx_logging_steps),
@@ -184,16 +200,14 @@ def main() -> None:
         valid_progress_log_format="{time} : Evaluating on "
                                   "{split} ({progress}%, {speed})",
         test_log_format="{time} : Epoch {epoch}, "
-                        "{split} results written to " + str(test_output_path),
+                        "{split} accuracy = {Accuracy:.3f}",
         # define metrics
         train_metrics=[
             ("loss", metric.RunningAverage(1)),  # only show current loss
             ("lr", metric.LR(optim))],
-        valid_metrics=[
-            metric.Accuracy[float](pred_name="preds", label_name="label_ids"),
-            ("loss", metric.Average())],
-        test_metrics=[  # only write to file
-            metric.FileWriterMetric(test_output_path, pred_name="preds")],
+        valid_metrics=[valid_metric, ("loss", metric.Average())],
+        test_metrics=[
+            valid_metric, FileWriterMetric(output_dir / "test.output")],
         # freq of validation
         validate_every=[cond.iteration(config_data.eval_steps)],
         # checkpoint saving location
@@ -204,6 +218,13 @@ def main() -> None:
         show_live_progress=True,
     )
 
+    # get intermediate result each epoch
+    # the interval can be modified with cond
+    @executor.on(cond.epoch(1))
+    def nni_intermediate(executor):  # pylint: disable=unused-variable
+        nni.report_intermediate_result(
+            executor.status["eval_metric"]["loss"].value())
+
     if args.checkpoint is not None:
         executor.load(args.checkpoint)
 
@@ -212,6 +233,8 @@ def main() -> None:
 
     if args.do_test:
         executor.test()
+        val_loss = executor.valid_metrics["loss"].value()
+        nni.report_final_result(val_loss)
 
 
 if __name__ == "__main__":

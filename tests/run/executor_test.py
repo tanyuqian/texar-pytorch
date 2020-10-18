@@ -19,6 +19,7 @@ import tempfile
 import unittest
 from pathlib import Path
 import os
+import sys
 from typing import List, Dict, Tuple
 
 import torch
@@ -93,6 +94,7 @@ class ExecutorTest(unittest.TestCase):
 
         self.checkpoint_dir = tempfile.mkdtemp()
         self.tbx_logging_dir = tempfile.mkdtemp()
+        self.log_output_dir = tempfile.mkdtemp()
 
     def tearDown(self) -> None:
         shutil.rmtree(self.checkpoint_dir)
@@ -100,6 +102,8 @@ class ExecutorTest(unittest.TestCase):
 
     def test_train_loop(self):
         optimizer = torch.optim.Adam(self.model.parameters())
+        output_path = os.path.join(self.checkpoint_dir, "output_{split}.txt")
+        log_path = Path(self.log_output_dir) / "log.txt"
         executor = Executor(
             model=self.model,
             train_data=self.datasets["train"],
@@ -111,30 +115,42 @@ class ExecutorTest(unittest.TestCase):
             save_every=[cond.time(seconds=10), cond.validation(better=True)],
             train_metrics=[("loss", metric.RunningAverage(20)),
                            metric.F1(pred_name="preds", mode="macro"),
-                           metric.Accuracy(pred_name="preds"),
+                           metric.Accuracy[float](pred_name="preds"),
                            metric.LR(optimizer)],
             optimizer=optimizer,
             stop_training_on=cond.epoch(10),
             valid_metrics=[metric.F1(pred_name="preds", mode="micro"),
                            ("loss", metric.Average())],
             validate_every=[cond.epoch()],
-            test_metrics=[metric.F1(pred_name="preds", mode="weighted")],
+            test_metrics=[metric.F1(pred_name="preds", mode="weighted"),
+                          metric.FileWriterMetric(output_path, sep=",",
+                                                  pred_name="preds")],
             plateau_condition=[
                 cond.consecutive(cond.validation(better=False), 2)],
             action_on_plateau=[action.early_stop(patience=2),
                                action.reset_params(),
                                action.scale_lr(0.8)],
+            log_destination=[sys.stdout, log_path],
             log_every=cond.iteration(20),
             show_live_progress=True,
         )
 
         executor.train()
         executor.test()
+        for split, dataset in [("test", self.datasets["test1"]),
+                               ("t2", self.datasets["test2"])]:
+            path = output_path.format(split=split)
+            self.assertTrue(os.path.exists(path))
+            with open(path, "r") as f:
+                self.assertEqual(len(f.read().split(",")), len(dataset))
+
+        self.assertTrue(os.path.exists(log_path))
 
         executor.save()
         executor.load()
 
     def test_tbx_logging(self):
+        log_path = Path(self.log_output_dir) / "log.txt"
         executor = Executor(
             model=self.model,
             train_data=self.datasets["train"],
@@ -160,6 +176,7 @@ class ExecutorTest(unittest.TestCase):
             action_on_plateau=[action.early_stop(patience=2),
                                action.reset_params(),
                                action.scale_lr(0.8)],
+            log_destination=[sys.stdout, log_path],
             log_every=cond.iteration(20),
             show_live_progress=True,
         )
@@ -168,6 +185,12 @@ class ExecutorTest(unittest.TestCase):
         path = Path(self.tbx_logging_dir)
         self.assertTrue(path.exists())
         self.assertEqual(len(list(os.walk(path))), 1)
+
+        # At this point, `executor._files_opened` is True, which will run the
+        #  main steps in the `_open_files()` function, it can cause IndexError
+        #  prior to this bug fix.
+        executor.test()
+        self.assertTrue(os.path.exists(log_path))
 
 
 if __name__ == "__main__":
